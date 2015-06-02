@@ -174,25 +174,25 @@ public class Debug {
 //	        System.out.println("Conjunctive := " + m1.getConjunctiveMerge(m4).getConjunctiveMerge(m8).getConjunctiveMerge(m10).getConjunctiveMerge(m7).getConjunctiveMerge(m9).getConjunctiveMerge(m14).getConjunctiveMerge(m5).getConjunctiveMerge(m6).getConjunctiveMerge(m15).getConjunctiveMerge(m2).getConjunctiveMerge(m11).getConjunctiveMerge(m12).getConjunctiveMerge(m13).getConjunctiveMerge(m3));
 //	        System.out.println("Disjunctive := " + m1.getDisjunctiveMerge(m4).getDisjunctiveMerge(m8).getDisjunctiveMerge(m10).getDisjunctiveMerge(m7).getDisjunctiveMerge(m9).getDisjunctiveMerge(m14).getDisjunctiveMerge(m5).getDisjunctiveMerge(m6).getDisjunctiveMerge(m15).getDisjunctiveMerge(m2).getDisjunctiveMerge(m11).getDisjunctiveMerge(m12).getDisjunctiveMerge(m13).getDisjunctiveMerge(m3));
 	        
-			BBASet<String> sequence = new BBASet<String>(frame);
-			sequence.add(m1);
-			sequence.add(m2);
-			sequence.add(m3);
-			sequence.add(m4);
-			sequence.add(m5);
-			sequence.add(m6);
-			sequence.add(m7);
-			sequence.add(m8);
-			sequence.add(m9);
-			sequence.add(m10);
-			sequence.add(m11);
-			sequence.add(m12);
-			sequence.add(m13);
-			sequence.add(m14);
-			sequence.add(m15);
-	        System.out.println("LPMCS' := " + sequence.getLPMCSMerge(0.25, 0.30).getLabel());
-	        System.out.println("Conjunctive' := " + sequence.getConjunctiveMerge().getLabel());
-	        System.out.println("Disjunctive' := " + sequence.getDisjunctiveMerge().getLabel());
+			BBASet<String> set = new BBASet<String>(frame);
+			set.add(m1);
+			set.add(m2);
+			set.add(m3);
+			set.add(m4);
+			set.add(m5);
+			set.add(m6);
+			set.add(m7);
+			set.add(m8);
+			set.add(m9);
+			set.add(m10);
+			set.add(m11);
+			set.add(m12);
+			set.add(m13);
+			set.add(m14);
+			set.add(m15);
+	        System.out.println("LPMCS' := " + set.getLPMCSMerge(0.25, 0.30).getLabel());
+	        System.out.println("Conjunctive' := " + set.getConjunctiveMerge().getLabel());
+	        System.out.println("Disjunctive' := " + set.getDisjunctiveMerge().getLabel());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

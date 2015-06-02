@@ -12,14 +12,14 @@ public class BBASet<T> {
 	
 	public void add(BBA<T> bba) {
 		if(!bba.getFrame().equals(frame)) {
-			throw new IllegalArgumentException("All BBAs in sequence must share the same frame.");
+			throw new IllegalArgumentException("All BBAs in set must share the same frame.");
 		}
 		bbas.add(bba);
 	}
 	
 	public BBA<T> getReferenceBBA() throws Exception {
 		if(bbas.isEmpty()) {
-			throw new Exception("Sequence is empty.");
+			throw new Exception("Set is empty.");
 		}
 		
 		BBA<T> best = null;
@@ -51,7 +51,7 @@ public class BBASet<T> {
 	
 	public BBA<T> getConjunctiveMerge() throws Exception {
 		if(bbas.isEmpty()) {
-			throw new Exception("Sequence is empty.");
+			throw new Exception("Set is empty.");
 		}
 		
 		AdvancedSet<BBA<T>> copy = bbas.copy();
@@ -77,7 +77,7 @@ public class BBASet<T> {
 	
 	public BBA<T> getDisjunctiveMerge() throws Exception {
 		if(bbas.isEmpty()) {
-			throw new Exception("Sequence is empty.");
+			throw new Exception("Set is empty.");
 		}
 		
 		AdvancedSet<BBA<T>> copy = bbas.copy();
@@ -103,7 +103,7 @@ public class BBASet<T> {
 	
 	public BBA<T> getLPMCSMerge(double strifeThreshold, double conflictThreshold) throws Exception {
 		if(bbas.isEmpty()) {
-			throw new Exception("Sequence is empty.");
+			throw new Exception("Set is empty.");
 		}
 		
 		AdvancedSet<BBA<T>> copy = bbas.copy();
