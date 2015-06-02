@@ -169,10 +169,6 @@ public class Debug {
 //			System.out.println("(m1 || m14)=" + m1.getDisjunctiveMerge(m14));
 //			System.out.println("(m1 || m15)=" + m1.getDisjunctiveMerge(m15));
 //			System.out.println("(m1 || m16)=" + m1.getDisjunctiveMerge(m16));
-			
-//			System.out.println("LPMCS := " + m1.getConjunctiveMerge(m4).getConjunctiveMerge(m8).getConjunctiveMerge(m10).getConjunctiveMerge(m7).getConjunctiveMerge(m9).getConjunctiveMerge(m14).getConjunctiveMerge(m5).getConjunctiveMerge(m6).getConjunctiveMerge(m15).getConjunctiveMerge(m2).getConjunctiveMerge(m11).getConjunctiveMerge(m12).getConjunctiveMerge(m13).getDisjunctiveMerge(m3));
-//	        System.out.println("Conjunctive := " + m1.getConjunctiveMerge(m4).getConjunctiveMerge(m8).getConjunctiveMerge(m10).getConjunctiveMerge(m7).getConjunctiveMerge(m9).getConjunctiveMerge(m14).getConjunctiveMerge(m5).getConjunctiveMerge(m6).getConjunctiveMerge(m15).getConjunctiveMerge(m2).getConjunctiveMerge(m11).getConjunctiveMerge(m12).getConjunctiveMerge(m13).getConjunctiveMerge(m3));
-//	        System.out.println("Disjunctive := " + m1.getDisjunctiveMerge(m4).getDisjunctiveMerge(m8).getDisjunctiveMerge(m10).getDisjunctiveMerge(m7).getDisjunctiveMerge(m9).getDisjunctiveMerge(m14).getDisjunctiveMerge(m5).getDisjunctiveMerge(m6).getDisjunctiveMerge(m15).getDisjunctiveMerge(m2).getDisjunctiveMerge(m11).getDisjunctiveMerge(m12).getDisjunctiveMerge(m13).getDisjunctiveMerge(m3));
 	        
 			BBASet<String> set = new BBASet<String>(frame);
 			set.add(m1);
@@ -190,9 +186,17 @@ public class Debug {
 			set.add(m13);
 			set.add(m14);
 			set.add(m15);
-	        System.out.println("LPMCS' := " + set.getLPMCSMerge(0.25, 0.30).getLabel());
-	        System.out.println("Conjunctive' := " + set.getConjunctiveMerge().getLabel());
-	        System.out.println("Disjunctive' := " + set.getDisjunctiveMerge().getLabel());
+	        System.out.println("LPMCS' := " + set.getLPMCSMerge(0.25, 0.30));
+	        System.out.println("Conjunctive' := " + set.getConjunctiveMerge());
+	        System.out.println("Disjunctive' := " + set.getDisjunctiveMerge());
+			
+//			int samples = 100;
+//			for(int i = 0; i <= samples; i++) {
+//				double conflict = (double)i/(double)samples;
+//				System.out.println("conflict = " + conflict + ", " + set.getLPMCSMerge(conflict, 0.1).getLabel());
+////				double strife = (double)i/(double)samples;
+////				System.out.println("strife = " + strife + ", " + set.getLPMCSMerge(0.25, strife).getLabel());
+//			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
