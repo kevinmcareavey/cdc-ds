@@ -5,12 +5,18 @@ import java.util.Map;
 
 public class BBA<T> {
 	
+	private String label;
 	private AdvancedSet<T> frame;
 	private Map<AdvancedSet<T>, Double> masses;
 	
-	public BBA(AdvancedSet<T> f) {
+	public BBA(String l, AdvancedSet<T> f) {
+		label = l;
 		frame = f;
 		masses = new HashMap<AdvancedSet<T>, Double>();
+	}
+	
+	public String getLabel() {
+		return label;
 	}
 	
 	public AdvancedSet<T> getFrame() {
@@ -145,7 +151,7 @@ public class BBA<T> {
 	public BBA<T> getConjunctiveMerge(BBA<T> other) {
 		BBA<T> merged = null;
 		if(this.isCommensurable(other)) {
-			merged = new BBA<T>(frame);
+			merged = new BBA<T>(this.getLabel() + " && " + other.getLabel(), frame);
 			double c = getNormalizationConstant(other);
 			Map<AdvancedSet<T>, Double> sums = new HashMap<AdvancedSet<T>, Double>();
 			for(Map.Entry<AdvancedSet<T>, Double> outer : masses.entrySet()) {
@@ -172,7 +178,7 @@ public class BBA<T> {
 	public BBA<T> getDisjunctiveMerge(BBA<T> other) {
 		BBA<T> merged = null;
 		if(isCommensurable(other)) {
-			merged = new BBA<T>(frame);
+			merged = new BBA<T>(this.getLabel() + " || " + other.getLabel(), frame);
 			Map<AdvancedSet<T>, Double> sums = new HashMap<AdvancedSet<T>, Double>();
 			for(Map.Entry<AdvancedSet<T>, Double> outer : masses.entrySet()) {
 				AdvancedSet<T> focalSetA = outer.getKey();

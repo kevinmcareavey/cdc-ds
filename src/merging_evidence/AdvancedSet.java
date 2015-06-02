@@ -65,6 +65,12 @@ public class AdvancedSet<T> extends HashSet<T> {
 		return intersection;
 	}
 	
+	public AdvancedSet<T> copy() {
+		AdvancedSet<T> copy = new AdvancedSet<T>();
+		copy.addAll(this);
+		return copy;
+	}
+	
 	@Override
 	public String toString() {
 		return super.toString().replace("[", "{").replace("]", "}");
