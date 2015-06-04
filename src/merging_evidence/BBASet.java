@@ -1,5 +1,8 @@
 package merging_evidence;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BBASet<T> {
 	
 	private AdvancedSet<T> frame;
@@ -17,38 +20,47 @@ public class BBASet<T> {
 		bbas.add(bba);
 	}
 	
-	public BBA<T> getReferenceBBA() throws Exception {
-		if(bbas.isEmpty()) {
-			throw new Exception("Set is empty.");
-		}
+	public List<BBA<T>> getHeuristicRanking(AdvancedSet<BBA<T>> set) {
+		List<BBA<T>> ranking = new ArrayList<BBA<T>>();
+		ranking.addAll(set);
 		
-		BBA<T> best = null;
-		double bestNonspecificity = Double.NEGATIVE_INFINITY;
-		double bestStrife = Double.POSITIVE_INFINITY;
-		for(BBA<T> current : bbas) {
-			double currentNonspecificity = current.getNonspecificity();
-			double currentStrife = current.getStrife();
-			if((best == null) || (currentNonspecificity < bestNonspecificity) 
-					|| ((currentNonspecificity == bestNonspecificity) && (currentStrife < bestStrife))) {
-				best = current;
-				bestNonspecificity = currentNonspecificity;
-				bestStrife = currentStrife;
-			}
-		}
-		return best;
+		int n = ranking.size();
+        int k;
+        for(int m = n; m >= 0; m--) {
+            for(int i = 0; i < n - 1; i++) {
+                k = i + 1;
+                BBA<T> first = ranking.get(i);
+                BBA<T> second = ranking.get(k);
+                if((second.getNonspecificity() < first.getNonspecificity())
+                		|| (second.getNonspecificity() == first.getNonspecificity() && second.getStrife() < first.getStrife())) {
+                	ranking.set(i, second);
+                	ranking.set(k, first);
+                }
+            }
+        }
+        
+		return ranking;
 	}
 	
-	public BBA<T> getClosestBBA(BBA<T> target, AdvancedSet<BBA<T>> set) {
-		BBA<T> closest = null;
-		double closestDistance = Double.POSITIVE_INFINITY;
-		for(BBA<T> current : set) {
-			double currentDistance = target.getJousselmeDistance(current);
-			if((closest == null) || (currentDistance < closestDistance)) {
-				closest = current;
-				closestDistance = currentDistance;
-			}
-		}
-		return closest;
+	public List<BBA<T>> getDistanceRanking(BBA<T> ref, AdvancedSet<BBA<T>> set) {
+		List<BBA<T>> ranking = new ArrayList<BBA<T>>();
+		ranking.addAll(set);
+		
+		int n = ranking.size();
+        int k;
+        for(int m = n; m >= 0; m--) {
+            for(int i = 0; i < n - 1; i++) {
+                k = i + 1;
+                BBA<T> first = ranking.get(i);
+                BBA<T> second = ranking.get(k);
+                if(ref.getJousselmeDistance(second) < ref.getJousselmeDistance(first)) {
+                	ranking.set(i, second);
+                	ranking.set(k, first);
+                }
+            }
+        }
+		
+		return ranking;
 	}
 	
 	public BBA<T> getConjunctiveMerge() throws Exception {
@@ -57,16 +69,16 @@ public class BBASet<T> {
 		}
 		
 		AdvancedSet<BBA<T>> copy = bbas.copy();
-		BBA<T> merge = this.getReferenceBBA();
-		copy.remove(merge);
-		
-		while(!copy.isEmpty()) {
-			BBA<T> closest = this.getClosestBBA(merge, copy);
-			merge = merge.getConjunctiveMerge(closest);
-			copy.remove(closest);
+		BBA<T> reference = this.getHeuristicRanking(copy).get(0);
+		System.err.println("heuristic := " + this.getHeuristicRanking(copy));
+		copy.remove(reference);
+		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
+		System.err.println("distance(" + reference + ") := " + distanceRanking);
+		for(BBA<T> next : distanceRanking) {
+			reference = reference.getConjunctiveMerge(next);
 		}
 		
-		return merge;
+		return reference;
 	}
 	
 	public BBA<T> getDisjunctiveMerge() throws Exception {
@@ -75,16 +87,16 @@ public class BBASet<T> {
 		}
 		
 		AdvancedSet<BBA<T>> copy = bbas.copy();
-		BBA<T> merge = this.getReferenceBBA();
-		copy.remove(merge);
-		
-		while(!copy.isEmpty()) {
-			BBA<T> closest = this.getClosestBBA(merge, copy);
-			merge = merge.getDisjunctiveMerge(closest);
-			copy.remove(closest);
+		BBA<T> reference = this.getHeuristicRanking(copy).get(0);
+		System.err.println("heuristic := " + this.getHeuristicRanking(copy));
+		copy.remove(reference);
+		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
+		System.err.println("distance(" + reference + ") := " + distanceRanking);
+		for(BBA<T> next : distanceRanking) {
+			reference = reference.getDisjunctiveMerge(next);
 		}
 		
-		return merge;
+		return reference;
 	}
 	
 	public BBA<T> getLPMCSMerge(double strifeThreshold, double conflictThreshold) throws Exception {
@@ -93,31 +105,52 @@ public class BBASet<T> {
 		}
 		
 		AdvancedSet<BBA<T>> copy = bbas.copy();
-		BBA<T> merge = this.getReferenceBBA();
-		copy.remove(merge);
+		
+		List<BBA<T>> heuristicRanking = this.getHeuristicRanking(copy);
+		System.err.println("heuristic := " + heuristicRanking);
+		
+		BBA<T> reference = heuristicRanking.remove(0);
+		System.err.println("new reference is " + reference + "...");
+		
+		copy.remove(reference);
+		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
+		System.err.println("distance(" + reference + ") := " + distanceRanking);
 		
 		BBASet<T> lpmcses = new BBASet<T>(frame);
-		while(!copy.isEmpty()) {
-			BBA<T> closest = this.getClosestBBA(merge, copy);
-			
-			double conflict = merge.getConflict(closest);
-			if(conflict <= conflictThreshold) {
-				BBA<T> result = merge.getConjunctiveMerge(closest);
-				if(result.getStrife() <= strifeThreshold) {
-					merge = result;
-					copy.remove(closest);
+		while(!distanceRanking.isEmpty()) {
+			BBA<T> next = distanceRanking.get(0);
+			if(reference.getConflict(next) <= conflictThreshold) {
+				BBA<T> merge = reference.getConjunctiveMerge(next);
+				if(merge.getStrife() <= strifeThreshold) {
+					reference = merge;
+					System.err.println("new reference is " + reference + "...");
+					copy.remove(next);
+					heuristicRanking.remove(next);
+					System.err.println("heuristic := " + heuristicRanking);
+					distanceRanking.remove(0);
 				} else {
-					lpmcses.add(merge);
-					merge = closest;
-					copy.remove(closest);
+					System.err.println("adding " + reference + " to LPMCSes...");
+					lpmcses.add(reference);
+					reference = heuristicRanking.remove(0);
+					System.err.println("new reference is " + reference + "...");
+					System.err.println("heuristic := " + heuristicRanking);
+					copy.remove(reference);
+					distanceRanking = this.getDistanceRanking(reference, copy);
+					System.err.println("distance(" + reference + ") := " + distanceRanking);
 				}
 			} else {
-				lpmcses.add(merge);
-				merge = closest;
-				copy.remove(closest);
+				System.err.println("adding " + reference + " to LPMCSes...");
+				lpmcses.add(reference);
+				reference = heuristicRanking.remove(0);
+				System.err.println("new reference is " + reference + "...");
+				System.err.println("heuristic := " + heuristicRanking);
+				copy.remove(reference);
+				distanceRanking = this.getDistanceRanking(reference, copy);
+				System.err.println("distance(" + reference + ") := " + distanceRanking);
 			}
 		}
-		lpmcses.add(merge);
+		System.err.println("adding " + reference + " to LPMCSes...");
+		lpmcses.add(reference);
 		
 		return lpmcses.getDisjunctiveMerge();
 	}

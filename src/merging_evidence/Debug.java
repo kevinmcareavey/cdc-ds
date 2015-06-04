@@ -2,7 +2,7 @@ package merging_evidence;
 
 public class Debug {
 	
-	public static void example() {
+	public static void exampleCIMA() {
 		try {
 			AdvancedSet<String> frame = new AdvancedSet<String>("l", "n", "h");
 			
@@ -186,17 +186,60 @@ public class Debug {
 			set.add(m13);
 			set.add(m14);
 			set.add(m15);
-	        System.out.println("LPMCS' := " + set.getLPMCSMerge(0.25, 0.30));
-	        System.out.println("Conjunctive' := " + set.getConjunctiveMerge());
-	        System.out.println("Disjunctive' := " + set.getDisjunctiveMerge());
+	        System.out.println("LPMCS' := " + set.getLPMCSMerge(0.25, 0.30).getLabel());
+	        System.out.println("Conjunctive' := " + set.getConjunctiveMerge().getLabel());
+	        System.out.println("Disjunctive' := " + set.getDisjunctiveMerge().getLabel());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static void example2_3_1() {
+		
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("l", "n", "h");
 			
-//			int samples = 100;
-//			for(int i = 0; i <= samples; i++) {
-//				double conflict = (double)i/(double)samples;
-//				System.out.println("conflict = " + conflict + ", " + set.getLPMCSMerge(conflict, 0.1).getLabel());
-////				double strife = (double)i/(double)samples;
-////				System.out.println("strife = " + strife + ", " + set.getLPMCSMerge(0.25, strife).getLabel());
-//			}
+			BBA<String> m1 = new BBA<String>("m1", frame);			
+			m1.addMass(new AdvancedSet<String>("l"), 0.80);
+			m1.addMass(new AdvancedSet<String>("h"), 0.15);
+			m1.addMass(new AdvancedSet<String>("n","h"), 0.05);
+			
+			BBA<String> m2 = new BBA<String>("m2", frame);
+			m2.addMass(new AdvancedSet<String>("l"), 0.60);
+			m2.addMass(new AdvancedSet<String>("h"), 0.10);	
+			m2.addMass(new AdvancedSet<String>("l","h"), 0.30);
+			
+			BBA<String> m3 = new BBA<String>("m3", frame);
+			m3.addMass(new AdvancedSet<String>("n"), 0.80);
+			m3.addMass(new AdvancedSet<String>("h"), 0.14);
+			m3.addMass(new AdvancedSet<String>("l","h"), 0.06);
+			
+			BBA<String> m4 = new BBA<String>("m4", frame);
+			m4.addMass(new AdvancedSet<String>("n"), 0.83);
+			m4.addMass(new AdvancedSet<String>("n","h"), 0.16);
+			m4.addMass(frame, 0.01);
+			
+			BBA<String> m5 = new BBA<String>("m5", frame);
+			m5.addMass(new AdvancedSet<String>("n"), 0.70);
+			m5.addMass(new AdvancedSet<String>("l","h"), 0.30);
+			
+			BBA<String> m6 = new BBA<String>("m6", frame);
+			m6.addMass(new AdvancedSet<String>("n"), 0.25);
+			m6.addMass(new AdvancedSet<String>("h"), 0.57);
+			m6.addMass(new AdvancedSet<String>("l","n"), 0.18);
+			
+			BBASet<String> set = new BBASet<String>(frame);
+			set.add(m1);
+			set.add(m2);
+			set.add(m3);
+			set.add(m4);
+			set.add(m5);
+			set.add(m6);
+			
+			System.out.println("sequence := " + set.getLPMCSMerge(0.50, 0.35).getLabel());
+//	        System.out.println("merged BBA := " + set.getLPMCSMerge(0.50, 0.35));
+//	        System.out.println("pignistic := " + set.getLPMCSMerge(0.50, 0.35).getPignisticTransformation());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -204,7 +247,8 @@ public class Debug {
 	}
 	
 	public static void main(String[] args) {
-		example();
+//		exampleCIMA();
+		example2_3_1();
 	}
 	
 }

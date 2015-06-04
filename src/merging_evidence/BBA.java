@@ -264,20 +264,21 @@ public class BBA<T> {
 	
 	@Override
 	public String toString() {
-		String output = "{";
-		String delim = "";
-        for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
-        	output += delim + "m(";
-        	if(entry.getKey().equals(frame)) {
-        		output += "...";
-        	} else {
-        		output += entry.getKey().toString();
-        	}
-        	output += ")=" + Utilities.format(entry.getValue());
-        	delim = ", ";
-        }
-        output += "}";
-        return output;
+//		String output = "{";
+//		String delim = "";
+//        for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
+//        	output += delim + "m(";
+//        	if(entry.getKey().equals(frame)) {
+//        		output += "...";
+//        	} else {
+//        		output += entry.getKey().toString();
+//        	}
+//        	output += ")=" + Utilities.format(entry.getValue());
+//        	delim = ", ";
+//        }
+//        output += "}";
+//        return output;
+		return label;
 	}
 
 }
