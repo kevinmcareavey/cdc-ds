@@ -70,10 +70,8 @@ public class BBASet<T> {
 		
 		AdvancedSet<BBA<T>> copy = bbas.copy();
 		BBA<T> reference = this.getHeuristicRanking(copy).get(0);
-		System.err.println("heuristic := " + this.getHeuristicRanking(copy));
 		copy.remove(reference);
 		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
-		System.err.println("distance(" + reference + ") := " + distanceRanking);
 		for(BBA<T> next : distanceRanking) {
 			reference = reference.getConjunctiveMerge(next);
 		}
@@ -88,10 +86,8 @@ public class BBASet<T> {
 		
 		AdvancedSet<BBA<T>> copy = bbas.copy();
 		BBA<T> reference = this.getHeuristicRanking(copy).get(0);
-		System.err.println("heuristic := " + this.getHeuristicRanking(copy));
 		copy.remove(reference);
 		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
-		System.err.println("distance(" + reference + ") := " + distanceRanking);
 		for(BBA<T> next : distanceRanking) {
 			reference = reference.getDisjunctiveMerge(next);
 		}
@@ -107,14 +103,11 @@ public class BBASet<T> {
 		AdvancedSet<BBA<T>> copy = bbas.copy();
 		
 		List<BBA<T>> heuristicRanking = this.getHeuristicRanking(copy);
-		System.err.println("heuristic := " + heuristicRanking);
 		
 		BBA<T> reference = heuristicRanking.remove(0);
-		System.err.println("new reference is " + reference + "...");
 		
 		copy.remove(reference);
 		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
-		System.err.println("distance(" + reference + ") := " + distanceRanking);
 		
 		BBASet<T> lpmcses = new BBASet<T>(frame);
 		while(!distanceRanking.isEmpty()) {
@@ -123,33 +116,22 @@ public class BBASet<T> {
 				BBA<T> merge = reference.getConjunctiveMerge(next);
 				if(merge.getStrife() <= strifeThreshold) {
 					reference = merge;
-					System.err.println("new reference is " + reference + "...");
 					copy.remove(next);
 					heuristicRanking.remove(next);
-					System.err.println("heuristic := " + heuristicRanking);
 					distanceRanking.remove(0);
 				} else {
-					System.err.println("adding " + reference + " to LPMCSes...");
 					lpmcses.add(reference);
 					reference = heuristicRanking.remove(0);
-					System.err.println("new reference is " + reference + "...");
-					System.err.println("heuristic := " + heuristicRanking);
 					copy.remove(reference);
 					distanceRanking = this.getDistanceRanking(reference, copy);
-					System.err.println("distance(" + reference + ") := " + distanceRanking);
 				}
 			} else {
-				System.err.println("adding " + reference + " to LPMCSes...");
 				lpmcses.add(reference);
 				reference = heuristicRanking.remove(0);
-				System.err.println("new reference is " + reference + "...");
-				System.err.println("heuristic := " + heuristicRanking);
 				copy.remove(reference);
 				distanceRanking = this.getDistanceRanking(reference, copy);
-				System.err.println("distance(" + reference + ") := " + distanceRanking);
 			}
 		}
-		System.err.println("adding " + reference + " to LPMCSes...");
 		lpmcses.add(reference);
 		
 		return lpmcses.getDisjunctiveMerge();
