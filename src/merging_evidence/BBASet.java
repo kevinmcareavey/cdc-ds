@@ -32,13 +32,13 @@ public class BBASet<T> extends AdvancedSet<BBA<T>> {
 			throw new Exception("No BBAs to merge.");
 		}
 		
-		BBASequence<T> sequence = new BBASequence<T>(this);
-		sequence.sort(new HeuristicComparator<T>());
-		BBA<T> reference = sequence.remove(0);
-		
-		sequence.sort(new DistanceComparator<T>(reference));
-		for(BBA<T> next : sequence) {
-			reference = reference.getConjunctiveMerge(next);
+		BBA<T> reference = null;
+		for(BBA<T> next : this) {
+			if(reference == null) {
+				reference = next;
+			} else {
+				reference = reference.getConjunctiveMerge(next);
+			}
 		}
 		
 		return reference;
@@ -49,13 +49,13 @@ public class BBASet<T> extends AdvancedSet<BBA<T>> {
 			throw new Exception("No BBAs to merge.");
 		}
 		
-		BBASequence<T> sequence = new BBASequence<T>(this);
-		sequence.sort(new HeuristicComparator<T>());
-		BBA<T> reference = sequence.remove(0);
-		
-		sequence.sort(new DistanceComparator<T>(reference));
-		for(BBA<T> next : sequence) {
-			reference = reference.getDisjunctiveMerge(next);
+		BBA<T> reference = null;
+		for(BBA<T> next : this) {
+			if(reference == null) {
+				reference = next;
+			} else {
+				reference = reference.getDisjunctiveMerge(next);
+			}
 		}
 		
 		return reference;
