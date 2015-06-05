@@ -1,78 +1,43 @@
 package merging_evidence;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 
-public class BBASet<T> {
+public class BBASet<T> extends AdvancedSet<BBA<T>> {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5303323634277871248L;
 	
 	private AdvancedSet<T> frame;
-	private AdvancedSet<BBA<T>> bbas;
 	
 	public BBASet(AdvancedSet<T> f) {
 		frame = f;
-		bbas = new AdvancedSet<BBA<T>>();
 	}
 	
-	public void add(BBA<T> bba) {
+	public AdvancedSet<T> getFrame() {
+		return frame;
+	}
+	
+	@Override
+	public boolean add(BBA<T> bba) {
 		if(!bba.getFrame().equals(frame)) {
 			throw new IllegalArgumentException("All BBAs in set must share the same frame.");
 		}
-		bbas.add(bba);
-	}
-	
-	public List<BBA<T>> getHeuristicRanking(AdvancedSet<BBA<T>> set) {
-		List<BBA<T>> ranking = new ArrayList<BBA<T>>();
-		ranking.addAll(set);
-		
-		int n = ranking.size();
-        int k;
-        for(int m = n; m >= 0; m--) {
-            for(int i = 0; i < n - 1; i++) {
-                k = i + 1;
-                BBA<T> first = ranking.get(i);
-                BBA<T> second = ranking.get(k);
-                if((second.getNonspecificity() < first.getNonspecificity())
-                		|| (second.getNonspecificity() == first.getNonspecificity() && second.getStrife() < first.getStrife())) {
-                	ranking.set(i, second);
-                	ranking.set(k, first);
-                }
-            }
-        }
-        
-		return ranking;
-	}
-	
-	public List<BBA<T>> getDistanceRanking(BBA<T> ref, AdvancedSet<BBA<T>> set) {
-		List<BBA<T>> ranking = new ArrayList<BBA<T>>();
-		ranking.addAll(set);
-		
-		int n = ranking.size();
-        int k;
-        for(int m = n; m >= 0; m--) {
-            for(int i = 0; i < n - 1; i++) {
-                k = i + 1;
-                BBA<T> first = ranking.get(i);
-                BBA<T> second = ranking.get(k);
-                if(ref.getJousselmeDistance(second) < ref.getJousselmeDistance(first)) {
-                	ranking.set(i, second);
-                	ranking.set(k, first);
-                }
-            }
-        }
-		
-		return ranking;
+		return super.add(bba);
 	}
 	
 	public BBA<T> getConjunctiveMerge() throws Exception {
-		if(bbas.isEmpty()) {
-			throw new Exception("Set is empty.");
+		if(this.isEmpty()) {
+			throw new Exception("No BBAs to merge.");
 		}
 		
-		AdvancedSet<BBA<T>> copy = bbas.copy();
-		BBA<T> reference = this.getHeuristicRanking(copy).get(0);
-		copy.remove(reference);
-		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
-		for(BBA<T> next : distanceRanking) {
+		BBASequence<T> sequence = new BBASequence<T>(this);
+		sequence.sort(new HeuristicComparator<T>());
+		BBA<T> reference = sequence.remove(0);
+		
+		sequence.sort(new DistanceComparator<T>(reference));
+		for(BBA<T> next : sequence) {
 			reference = reference.getConjunctiveMerge(next);
 		}
 		
@@ -80,15 +45,16 @@ public class BBASet<T> {
 	}
 	
 	public BBA<T> getDisjunctiveMerge() throws Exception {
-		if(bbas.isEmpty()) {
-			throw new Exception("Set is empty.");
+		if(this.isEmpty()) {
+			throw new Exception("No BBAs to merge.");
 		}
 		
-		AdvancedSet<BBA<T>> copy = bbas.copy();
-		BBA<T> reference = this.getHeuristicRanking(copy).get(0);
-		copy.remove(reference);
-		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
-		for(BBA<T> next : distanceRanking) {
+		BBASequence<T> sequence = new BBASequence<T>(this);
+		sequence.sort(new HeuristicComparator<T>());
+		BBA<T> reference = sequence.remove(0);
+		
+		sequence.sort(new DistanceComparator<T>(reference));
+		for(BBA<T> next : sequence) {
 			reference = reference.getDisjunctiveMerge(next);
 		}
 		
@@ -96,18 +62,16 @@ public class BBASet<T> {
 	}
 	
 	public BBA<T> getLPMCSMerge(double strifeThreshold, double conflictThreshold) throws Exception {
-		if(bbas.isEmpty()) {
-			throw new Exception("Set is empty.");
+		if(this.isEmpty()) {
+			throw new Exception("No BBAs to merge.");
 		}
 		
-		AdvancedSet<BBA<T>> copy = bbas.copy();
-		
-		List<BBA<T>> heuristicRanking = this.getHeuristicRanking(copy);
-		
+		BBASequence<T> heuristicRanking = new BBASequence<T>(this);
+		heuristicRanking.sort(new HeuristicComparator<T>());
 		BBA<T> reference = heuristicRanking.remove(0);
 		
-		copy.remove(reference);
-		List<BBA<T>> distanceRanking = this.getDistanceRanking(reference, copy);
+		BBASequence<T> distanceRanking = heuristicRanking.copy();
+		distanceRanking.sort(new DistanceComparator<T>(reference));
 		
 		BBASet<T> lpmcses = new BBASet<T>(frame);
 		while(!distanceRanking.isEmpty()) {
@@ -116,20 +80,19 @@ public class BBASet<T> {
 				BBA<T> merge = reference.getConjunctiveMerge(next);
 				if(merge.getStrife() <= strifeThreshold) {
 					reference = merge;
-					copy.remove(next);
 					heuristicRanking.remove(next);
 					distanceRanking.remove(0);
 				} else {
 					lpmcses.add(reference);
 					reference = heuristicRanking.remove(0);
-					copy.remove(reference);
-					distanceRanking = this.getDistanceRanking(reference, copy);
+					distanceRanking.remove(reference);
+					distanceRanking.sort(new DistanceComparator<T>(reference));
 				}
 			} else {
 				lpmcses.add(reference);
 				reference = heuristicRanking.remove(0);
-				copy.remove(reference);
-				distanceRanking = this.getDistanceRanking(reference, copy);
+				distanceRanking.remove(reference);
+				distanceRanking.sort(new DistanceComparator<T>(reference));
 			}
 		}
 		lpmcses.add(reference);
@@ -137,4 +100,46 @@ public class BBASet<T> {
 		return lpmcses.getDisjunctiveMerge();
 	}
 	
+}
+
+class HeuristicComparator<T> implements Comparator<BBA<T>> {
+	
+    public int compare(BBA<T> a, BBA<T> b) {
+    	double aNonspecificity = a.getNonspecificity();
+    	double bNonspecificity = b.getNonspecificity();
+    	double aStrife = a.getStrife();
+    	double bStrife = b.getStrife();
+		if((aNonspecificity < bNonspecificity) 
+				|| (aNonspecificity == bNonspecificity && aStrife < bStrife)) {
+			return -1;
+		} else if((aNonspecificity == bNonspecificity) 
+				&& (aStrife == bStrife)) {
+			return 0;
+		} else {
+			return 1;
+		}
+    }
+    
+}
+
+class DistanceComparator<T> implements Comparator<BBA<T>> {
+	
+	private BBA<T> reference;
+	
+	public DistanceComparator(BBA<T> r) {
+		reference = r;
+	}
+	
+    public int compare(BBA<T> a, BBA<T> b) {
+    	double aDistance = reference.getJousselmeDistance(a);
+    	double bDistance = reference.getJousselmeDistance(b);
+		if(aDistance < bDistance) {
+			return -1;
+		} else if(aDistance == bDistance) {
+			return 0;
+		} else {
+			return 1;
+		}
+    }
+    
 }

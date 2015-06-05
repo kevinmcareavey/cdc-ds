@@ -314,6 +314,8 @@ public class Debug {
 			set.add(m5);
 			set.add(m6);
 			
+//			BBA<String> merged = set.getConjunctiveMerge();
+//			BBA<String> merged = set.getDisjunctiveMerge();
 			BBA<String> merged = set.getLPMCSMerge(0.50, 0.35);
 			System.out.println("sequence  := " + merged.getLabel());
 	        System.out.println("BBA       := " + merged);
@@ -326,8 +328,8 @@ public class Debug {
 	
 	public static void main(String[] args) {
 //		test();
-		cima();
-//		lpmces2_3_1();
+//		cima();
+		lpmces2_3_1();
 	}
 	
 }

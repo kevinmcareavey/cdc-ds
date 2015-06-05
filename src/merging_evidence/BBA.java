@@ -257,7 +257,7 @@ public class BBA<T> {
 					sum += (entry.getValue() / (double)focalSet.size());
 				}
 			}
-			result.addProbability(element, sum);
+			result.put(element, sum);
 		}
 		return result;
 	}
