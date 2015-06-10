@@ -11,6 +11,7 @@ public class AdvancedSet<T> extends HashSet<T> {
 		super();
 	}
 	
+	@SafeVarargs
 	public AdvancedSet(T... inputs) {
 		super();
 		for(int i = 0; i < inputs.length; i++) {

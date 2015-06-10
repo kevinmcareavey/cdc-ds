@@ -135,7 +135,7 @@ public class BBA<T> {
 				for(Map.Entry<AdvancedSet<T>, Double> inner : other.getMasses().entrySet()) {
 					AdvancedSet<T> focalSetB = inner.getKey();
 					AdvancedSet<T> intersection = focalSetA.intersection(focalSetB);
-					if(intersection.size() == 0) {
+					if(intersection.isEmpty()) {
 						sum += (inner.getValue() * outer.getValue());
 					}
 				}
@@ -226,10 +226,10 @@ public class BBA<T> {
 			Map<AdvancedSet<T>, Double> intermediates = new HashMap<AdvancedSet<T>, Double>();
 			for(AdvancedSet<T> column : focalSets) {
 				for(AdvancedSet<T> row : focalSets) {
-					AdvancedSet<T> intersection = column.intersection(row);
 					AdvancedSet<T> union = column.union(row);
 					double dab = 0;
 					if(!union.isEmpty()) {
+						AdvancedSet<T> intersection = column.intersection(row);
 						dab = (double)intersection.size() / (double)union.size();
 					}
 					double value = distances.get(row) * dab;
