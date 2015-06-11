@@ -100,6 +100,21 @@ public class BBASet<T> extends AdvancedSet<BBA<T>> {
 		return lpmcses.getDisjunctiveMerge();
 	}
 	
+	public BBASet<T> copy() {
+		BBASet<T> copy = new BBASet<T>(frame);
+		copy.addAll(this);
+		return copy;
+	}
+	
+	@Override
+	public String toString() {
+		AdvancedSet<String> output = new AdvancedSet<String>();
+		for(BBA<T> element : this) {
+			output.add(element.getLabel());
+		}
+		return output.toString();
+	}
+	
 }
 
 class HeuristicComparator<T> implements Comparator<BBA<T>> {

@@ -37,7 +37,13 @@ public class BBA<T> {
 	
 	public void addMass(AdvancedSet<T> subset, double value) {
 		if(value < 0 || value > 1) {
-			throw new IllegalArgumentException("The mass value must be in the range [0, 1].");
+			if(value < 0 && value > -0.00000001) {
+				value = (double)0;
+			} else if(value > 1 && value < 1.00000001) {
+				value = (double)0;
+			} else {
+				throw new IllegalArgumentException("The mass value must be in the range [0, 1].");
+			}
 		}
 		if(!subset.subsetOf(frame)) {
 			throw new IllegalArgumentException("The input must be a subset of the frame of discernment.");
