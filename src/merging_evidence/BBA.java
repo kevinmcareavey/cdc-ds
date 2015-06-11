@@ -144,15 +144,15 @@ public class BBA<T> {
 		return sum;
 	}
 	
-	public double getNormalizationConstant(BBA<T> other) {
-		return (double)1 / ((double)1 - this.getConflict(other));
-	}
-	
-	public BBA<T> getConjunctiveMerge(BBA<T> other) {
+	public BBA<T> getConjunctiveMerge(BBA<T> other) throws Exception {
 		BBA<T> merged = null;
 		if(this.isCommensurable(other)) {
 			merged = new BBA<T>(this.getLabel() + " && " + other.getLabel(), frame);
-			double c = getNormalizationConstant(other);
+			double conflict = this.getConflict(other);
+			if(!(conflict < 1)) {
+				throw new Exception("unable to conjunctively merge completely conflicting BBAs");
+			}
+			double c = (double)1 / ((double)1 - conflict);
 			Map<AdvancedSet<T>, Double> sums = new HashMap<AdvancedSet<T>, Double>();
 			for(Map.Entry<AdvancedSet<T>, Double> outer : masses.entrySet()) {
 				AdvancedSet<T> focalSetA = outer.getKey();

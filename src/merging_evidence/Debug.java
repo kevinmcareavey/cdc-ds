@@ -431,13 +431,83 @@ public class Debug {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void proof() {
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("l", "n", "h", "u");
+
+			BBA<String> m1 = new BBA<String>("m1", frame);
+			m1.addMass(new AdvancedSet<String>("l"), 0.60);
+			m1.addMass(new AdvancedSet<String>("u"), 0.30);
+			m1.addMass(new AdvancedSet<String>("n"), 0.05);
+			m1.addMass(new AdvancedSet<String>("h"), 0.05);
+			
+			BBA<String> m2 = new BBA<String>("m2", frame);
+			m2.addMass(new AdvancedSet<String>("l"), 0.15);
+			m2.addMass(new AdvancedSet<String>("u"), 0.05);
+			m2.addMass(new AdvancedSet<String>("n"), 0.80);
+			
+			BBA<String> m3 = new BBA<String>("m3", frame);
+			m3.addMass(new AdvancedSet<String>("l"), 0.15);
+			m3.addMass(new AdvancedSet<String>("u"), 0.05);
+			m3.addMass(new AdvancedSet<String>("h"), 0.80);
+			
+			BBASet<String> set = new BBASet<String>(frame);
+			set.add(m1);
+			set.add(m2);
+			set.add(m3);
+			
+			for(BBA<String> other : set) {
+				System.out.println(other.getLabel() + "=" + other);
+			}
+			System.out.println();
+			
+			for(BBA<String> other : set) {
+				System.out.println("N(" + other.getLabel() + ")=" + Utilities.format(other.getNonspecificity()) + ", S(" + other.getLabel() + ")=" + Utilities.format(other.getStrife()));
+			}
+			System.out.println();
+			
+			for(BBA<String> other : set) {
+				if(!m1.equals(other)) {
+					System.out.println("d(" + m1.getLabel() + "," + other.getLabel() + ")=" + Utilities.format(m1.getJousselmeDistance(other)));
+				}
+			}
+			System.out.println();
+			
+			for(BBA<String> other : set) {
+				if(!m1.equals(other)) {
+					BBA<String> merge = m1.getConjunctiveMerge(other);
+					System.out.println("K(" + m1.getLabel() + "," + other.getLabel() + ")=" + Utilities.format(m1.getConflict(other)) + ", "
+							+ "S(" + merge.getLabel() + ")=" + Utilities.format(merge.getStrife()));
+				}
+			}
+			System.out.println();
+			
+			for(BBA<String> mj : set) {
+				for(BBA<String> mk : set) {
+					if(!m1.equals(mj) && !m1.equals(mk) && !mj.equals(mk)) {
+						BBA<String> m1j = m1.getConjunctiveMerge(mj);
+						System.out.println(m1j.getLabel() + "=" + m1j);
+						BBA<String> m1jk = m1j.getConjunctiveMerge(mk);
+						System.out.println("d(" + m1j.getLabel() + "," + mk.getLabel() + ")=" + Utilities.format(m1j.getJousselmeDistance(mk)));
+						System.out.println("K(" + m1j.getLabel() + "," + mk.getLabel() + ")=" + Utilities.format(m1j.getConflict(mk)) + ", "
+								+ "S(" + m1jk.getLabel() + ")=" + Utilities.format(m1jk.getStrife()));
+					}
+				}
+			}
+			System.out.println();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void main(String[] args) {
 //		test();
 //		cima();
 //		lpmces2_3_1();
 //		reference();
-		distance();
+//		distance();
+//		proof();
 	}
 
 }
