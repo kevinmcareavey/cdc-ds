@@ -40,7 +40,7 @@ public class BBA<T> {
 			if(value < 0 && value > -0.00000001) {
 				value = (double)0;
 			} else if(value > 1 && value < 1.00000001) {
-				value = (double)0;
+				value = (double)1;
 			} else {
 				throw new IllegalArgumentException("The mass value must be in the range [0, 1].");
 			}
