@@ -1,5 +1,7 @@
 package merging_evidence;
 
+import java.util.ArrayList;
+
 public class Debug {
 
 	public static void test() {
@@ -543,12 +545,179 @@ public class Debug {
 		}
 	}
 	
+	public static void identical() {
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("l", "n", "h");
+			
+			BBA<String> m0 = new BBA<String>("m0", frame);
+			m0.addMass(frame, 1);
+			
+			BBA<String> m1 = new BBA<String>("m1", frame);
+			m1.addMass(new AdvancedSet<String>("n"), 0.6);
+			m1.addMass(new AdvancedSet<String>("h"), 0.4);
+			
+			BBA<String> m2 = new BBA<String>("m2", frame);
+			m2.addMass(new AdvancedSet<String>("n"), 0.6);
+			m2.addMass(new AdvancedSet<String>("h"), 0.4);
+			
+			BBA<String> m3 = new BBA<String>("m3", frame);
+			m3.addMass(new AdvancedSet<String>("n"), 0.6111111);
+			m3.addMass(new AdvancedSet<String>("h"), 0.3999999);
+			
+			BBASet<String> set = new BBASet<String>(frame);
+			set.add(m1);
+			set.add(m2);
+			set.add(m3);
+			
+//			System.out.println(m1.getLabel() + " = " + m1);
+//			System.out.println(m2.getLabel() + " = " + m2);
+//			System.out.println("normal: " + m1.getConjunctiveMerge(m2));
+//			System.out.println("normal: " + m1.getConjunctiveMerge(m2.getDiscountedBBA(0.5)));
+			
+			System.out.println(set.getUniquePartition(0));
+			
+			System.out.println("d(" + m1.getLabel() + "," + m0.getLabel() + ")=" + m1.getJousselmeDistance(m0));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void distanceMatrix() {
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("l", "n", "h");
+
+			BBA<String> m1 = new BBA<String>("m1", frame);
+			m1.addMass(new AdvancedSet<String>("l"), 0.05);
+			m1.addMass(new AdvancedSet<String>("n"), 0.95);
+
+			BBA<String> m2 = new BBA<String>("m2", frame);
+			m2.addMass(new AdvancedSet<String>("l"), 0.22);
+			m2.addMass(new AdvancedSet<String>("n"), 0.78);
+
+			BBA<String> m3 = new BBA<String>("m3", frame);
+			m3.addMass(new AdvancedSet<String>("l"), 0.56);
+			m3.addMass(new AdvancedSet<String>("n"), 0.44);
+
+			BBA<String> m4 = new BBA<String>("m4", frame);
+			m4.addMass(new AdvancedSet<String>("l"), 0.05);
+			m4.addMass(new AdvancedSet<String>("n"), 0.95);
+
+			BBA<String> m5 = new BBA<String>("m5", frame);
+			m5.addMass(new AdvancedSet<String>("n"), 0.85);
+			m5.addMass(new AdvancedSet<String>("h"), 0.15);
+
+			BBA<String> m6 = new BBA<String>("m6", frame);
+			m6.addMass(new AdvancedSet<String>("n"), 0.85);
+			m6.addMass(new AdvancedSet<String>("h"), 0.15);
+
+			BBA<String> m7 = new BBA<String>("m7", frame);
+			m7.addMass(new AdvancedSet<String>("l"), 0.15);
+			m7.addMass(new AdvancedSet<String>("n"), 0.85);
+
+			BBA<String> m8 = new BBA<String>("m8", frame);
+			m8.addMass(new AdvancedSet<String>("l"), 0.05);
+			m8.addMass(new AdvancedSet<String>("n"), 0.95);
+
+			BBA<String> m9 = new BBA<String>("m9", frame);
+			m9.addMass(new AdvancedSet<String>("l"), 0.15);
+			m9.addMass(new AdvancedSet<String>("n"), 0.85);
+
+			BBA<String> m10 = new BBA<String>("m10", frame);
+			m10.addMass(new AdvancedSet<String>("l"), 0.1);
+			m10.addMass(new AdvancedSet<String>("n"), 0.9);
+
+			BBA<String> m11 = new BBA<String>("m11", frame);
+			m11.addMass(new AdvancedSet<String>("l"), 0.22);
+			m11.addMass(new AdvancedSet<String>("n"), 0.78);
+
+			BBA<String> m12 = new BBA<String>("m12", frame);
+			m12.addMass(new AdvancedSet<String>("l"), 0.22);
+			m12.addMass(new AdvancedSet<String>("n"), 0.78);
+
+			BBA<String> m13 = new BBA<String>("m13", frame);
+			m13.addMass(new AdvancedSet<String>("n"), 0.5);
+			m13.addMass(new AdvancedSet<String>("l", "h"), 0.05);
+			m13.addMass(new AdvancedSet<String>("n", "h"), 0.3);
+			m13.addMass(frame, 0.15);
+
+			BBA<String> m14 = new BBA<String>("m14", frame);
+			m14.addMass(new AdvancedSet<String>("n"), 0.85);
+			m14.addMass(new AdvancedSet<String>("l", "h"), 0.05);
+			m14.addMass(new AdvancedSet<String>("n", "h"), 0.05);
+			m14.addMass(frame, 0.05);
+
+			BBA<String> m15 = new BBA<String>("m15", frame);
+			m15.addMass(new AdvancedSet<String>("n"), 0.75);
+			m15.addMass(frame, 0.25);
+
+			BBA<String> m16 = new BBA<String>("m16", frame);
+			m16.addMass(new AdvancedSet<String>("l"), 0.2);
+			m16.addMass(new AdvancedSet<String>("n"), 0.8);
+			
+			ArrayList<BBA<String>> list = new ArrayList<BBA<String>>();
+			list.add(m1);
+			list.add(m2);
+			list.add(m3);
+			list.add(m4);
+			list.add(m5);
+			list.add(m6);
+			list.add(m7);
+			list.add(m8);
+			list.add(m9);
+			list.add(m10);
+			list.add(m11);
+			list.add(m12);
+			list.add(m13);
+			list.add(m14);
+			list.add(m15);
+			list.add(m16);
+			
+			String row = "";
+			for(BBA<String> left : list) {
+				System.out.print(row + "(");
+				String col = "";
+				for(BBA<String> right : list) {
+//					double distance = left.getEuclideanDistance(right);
+					double distance = left.getJousselmeDistance(right);
+					System.out.print(col + Utilities.format(distance));
+					col = ", ";
+				}
+				System.out.print(")");
+				row = ",\n";
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	public static void absurd() {
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("l", "n", "h");
+			
+			BBASet<String> set = new BBASet<String>(frame);
+			for(int i = 0; i < 15; i++) {
+				BBA<String> m = new BBA<String>("m1", frame);
+				m.addMass(new AdvancedSet<String>("n"), 0.51);
+				m.addMass(new AdvancedSet<String>("h"), 0.49);
+				set.add(m);
+			}
+			
+			System.out.println(set.getDisjunctiveMerge());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args) {
 //		test();
 //		cima();
 //		lpmces2_3_1();
 //		reference();
-		distance();
+//		distance();
+//		identical();
+//		distanceMatrix();
+		absurd();
 	}
 
 }

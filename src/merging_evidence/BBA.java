@@ -4,29 +4,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BBA<T> {
+
+	private static double DEVIATION = 0.00000001;
 	
 	private String label;
 	private AdvancedSet<T> frame;
 	private Map<AdvancedSet<T>, Double> masses;
-	
+
 	public BBA(String l, AdvancedSet<T> f) {
 		label = l;
 		frame = f;
 		masses = new HashMap<AdvancedSet<T>, Double>();
 	}
-	
+
 	public String getLabel() {
 		return label;
 	}
-	
+
 	public AdvancedSet<T> getFrame() {
 		return frame;
 	}
-	
+
 	public Map<AdvancedSet<T>, Double> getMasses() {
 		return masses;
 	}
-	
+
 	public AdvancedSet<AdvancedSet<T>> getFocalSets() {
 		AdvancedSet<AdvancedSet<T>> focalSets = new AdvancedSet<AdvancedSet<T>>();
 		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
@@ -34,12 +36,12 @@ public class BBA<T> {
 		}
 		return focalSets;
 	}
-	
+
 	public void addMass(AdvancedSet<T> subset, double value) {
 		if(value < 0 || value > 1) {
-			if(value < 0 && value > -0.00000001) {
+			if(value < 0 && value > 0 - DEVIATION) {
 				value = (double)0;
-			} else if(value > 1 && value < 1.00000001) {
+			} else if(value > 1 && value < 1 + DEVIATION) {
 				value = (double)1;
 			} else {
 				throw new IllegalArgumentException("The mass value must be in the range [0, 1].");
@@ -48,45 +50,45 @@ public class BBA<T> {
 		if(!subset.subsetOf(frame)) {
 			throw new IllegalArgumentException("The input must be a subset of the frame of discernment.");
 		}
-		if(value == 0) {
+		if(value < 0 + DEVIATION) {
 			masses.remove(subset);
 		} else {
 			masses.put(subset, value);
 		}
 	}
-	
+
 	public double getMass(AdvancedSet<T> subset) {
-        double result = 0;
-        if(masses.containsKey(subset)) {
-        	result = masses.get(subset);
-        }
-        return result;
-    }
-	
+		double result = 0;
+		if(masses.containsKey(subset)) {
+			result = masses.get(subset);
+		}
+		return result;
+	}
+
 	public double getBelief(AdvancedSet<T> subset) {
 		double sum = 0;
-        for(Map.Entry<AdvancedSet<T>, Double> outer : masses.entrySet()) {
-        	AdvancedSet<T> subsetFocal = outer.getKey();
-        	if(subsetFocal.subsetOf(subset)) {
-        		double mass = outer.getValue();
-        		sum += mass;
-        	}
-        }
-        return sum;
-    }
-	
+		for(Map.Entry<AdvancedSet<T>, Double> outer : masses.entrySet()) {
+			AdvancedSet<T> subsetFocal = outer.getKey();
+			if(subsetFocal.subsetOf(subset)) {
+				double mass = outer.getValue();
+				sum += mass;
+			}
+		}
+		return sum;
+	}
+
 	public double getPlausibility(AdvancedSet<T> subset) {
 		double sum = 0;
-        for(Map.Entry<AdvancedSet<T>, Double> outer : masses.entrySet()) {
-        	AdvancedSet<T> subsetFocal = outer.getKey();
-        	if(subset.intersects(subsetFocal)) {
-    			double mass = outer.getValue();
-    			sum += mass;
-    		}
-        }
-        return sum;
-    }
-	
+		for(Map.Entry<AdvancedSet<T>, Double> outer : masses.entrySet()) {
+			AdvancedSet<T> subsetFocal = outer.getKey();
+			if(subset.intersects(subsetFocal)) {
+				double mass = outer.getValue();
+				sum += mass;
+			}
+		}
+		return sum;
+	}
+
 	public boolean isValid() {
 		boolean result = false;
 		double sum = sum();
@@ -96,7 +98,7 @@ public class BBA<T> {
 		}
 		return result;
 	}
-	
+
 	public double sum() {
 		double sum = 0;
 		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
@@ -105,10 +107,68 @@ public class BBA<T> {
 		return sum;
 	}
 	
+	public boolean isNormalized() {
+		if(this.getMass(new AdvancedSet<T>()) == 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isVacuous() {
+		if(this.getMass(frame) == 1) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isCategorical() {
+		if(this.isNormalized()) {
+			if(masses.size() == 1) {
+				if(this.getMass(frame) == 0) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean isBayesian() {
+		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
+			if(entry.getKey().size() != 1) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean isConsonant() {
+		return false;// all focal sets are nested
+	}
+	
+	public boolean isCertain() {
+		if(this.isCategorical()) {
+			if(this.isBayesian()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isSimpleSupport() {
+		if(masses.size() == 1) {
+			return true;
+		} else if(masses.size() == 2) {
+			if(this.getMass(frame) > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean isCommensurable(BBA<T> other) {
 		return this.getFrame().equals(other.getFrame());
 	}
-	
+
 	public double getNonspecificity() {
 		double sum = 0;
 		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
@@ -117,7 +177,7 @@ public class BBA<T> {
 		}
 		return sum;
 	}
-	
+
 	public double getStrife() {
 		double sum = 0;
 		for(Map.Entry<AdvancedSet<T>, Double> outer : masses.entrySet()) {
@@ -132,7 +192,7 @@ public class BBA<T> {
 		}
 		return -sum;
 	}
-	
+
 	public double getConflict(BBA<T> other) {
 		double sum = 0;
 		if(this.isCommensurable(other)) {
@@ -149,7 +209,7 @@ public class BBA<T> {
 		}
 		return sum;
 	}
-	
+
 	public BBA<T> getConjunctiveMerge(BBA<T> other) throws Exception {
 		BBA<T> merged = null;
 		if(this.isCommensurable(other)) {
@@ -180,7 +240,7 @@ public class BBA<T> {
 		}
 		return merged;
 	}
-	
+
 	public BBA<T> getDisjunctiveMerge(BBA<T> other) {
 		BBA<T> merged = null;
 		if(isCommensurable(other)) {
@@ -204,31 +264,31 @@ public class BBA<T> {
 		}
 		return merged;
 	}
-	
+
 	public double getEuclideanDistance(BBA<T> other) {
 		double sum = 0;
 		if(isCommensurable(other)) {
 			AdvancedSet<AdvancedSet<T>> focalSets = this.getFocalSets();
 			focalSets.addAll(other.getFocalSets());
-			
+
 			for(AdvancedSet<T> focalSet : focalSets) {
 				sum += Math.pow(Math.abs(this.getMass(focalSet) - other.getMass(focalSet)), 2);
 			}
 		}
 		return Math.sqrt(sum);
 	}
-	
+
 	public double getJousselmeDistance(BBA<T> other) {
 		double sum = 0;
 		if(isCommensurable(other)) {
 			AdvancedSet<AdvancedSet<T>> focalSets = this.getFocalSets();
 			focalSets.addAll(other.getFocalSets());
-			
+
 			Map<AdvancedSet<T>, Double> distances = new HashMap<AdvancedSet<T>, Double>();
 			for(AdvancedSet<T> focalSet : focalSets) {
 				distances.put(focalSet, this.getMass(focalSet) - other.getMass(focalSet));
 			}
-			
+
 			Map<AdvancedSet<T>, Double> intermediates = new HashMap<AdvancedSet<T>, Double>();
 			for(AdvancedSet<T> column : focalSets) {
 				for(AdvancedSet<T> row : focalSets) {
@@ -245,14 +305,14 @@ public class BBA<T> {
 					intermediates.put(column, value);
 				}
 			}
-			
+
 			for(AdvancedSet<T> focalSet : focalSets) {
 				sum += distances.get(focalSet) * intermediates.get(focalSet);
 			}
 		}
 		return Math.sqrt(0.5 * sum);
 	}
-	
+
 	public ProbabilityDistribution<T> getPignisticTransformation() {
 		ProbabilityDistribution<T> result = new ProbabilityDistribution<T>(frame);
 		for(T element : frame) {
@@ -268,22 +328,42 @@ public class BBA<T> {
 		return result;
 	}
 	
+	public BBA<T> getDiscountedBBA(double alpha) throws Exception {
+		if(alpha < 0 || alpha > 1) {
+			throw new Exception("discount must be in the interval [0, 1]");
+		}
+		BBA<T> discounted = new BBA<T>(label + "_" + Utilities.format(alpha), frame);
+		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
+			AdvancedSet<T> focalElement = entry.getKey();
+			if(!focalElement.equals(frame)) {
+				double focalMass = entry.getValue();
+				discounted.addMass(focalElement, alpha * focalMass);
+			}
+		}
+		double frameMass = 0;
+		if(masses.containsKey(frame)) {
+			frameMass = masses.get(frame);
+		}
+		discounted.addMass(frame, (1 - alpha) + (alpha * frameMass));
+		return discounted;
+	}
+	
 	@Override
 	public String toString() {
 		String output = "{";
 		String delim = "";
-        for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
-        	output += delim + "m(";
-        	if(entry.getKey().equals(frame)) {
-        		output += "...";
-        	} else {
-        		output += entry.getKey().toString();
-        	}
-        	output += ")=" + Utilities.format(entry.getValue());
-        	delim = ", ";
-        }
-        output += "}";
-        return output;
+		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
+			output += delim + "m(";
+			if(entry.getKey().equals(frame)) {
+				output += "...";
+			} else {
+				output += entry.getKey().toString();
+			}
+			output += ")=" + Utilities.format(entry.getValue());
+			delim = ", ";
+		}
+		output += "}";
+		return output;
 	}
 
 }
