@@ -545,43 +545,6 @@ public class Debug {
 		}
 	}
 	
-	public static void identical() {
-		try {
-			AdvancedSet<String> frame = new AdvancedSet<String>("l", "n", "h");
-			
-			BBA<String> m0 = new BBA<String>("m0", frame);
-			m0.addMass(frame, 1);
-			
-			BBA<String> m1 = new BBA<String>("m1", frame);
-			m1.addMass(new AdvancedSet<String>("n"), 0.6);
-			m1.addMass(new AdvancedSet<String>("h"), 0.4);
-			
-			BBA<String> m2 = new BBA<String>("m2", frame);
-			m2.addMass(new AdvancedSet<String>("n"), 0.6);
-			m2.addMass(new AdvancedSet<String>("h"), 0.4);
-			
-			BBA<String> m3 = new BBA<String>("m3", frame);
-			m3.addMass(new AdvancedSet<String>("n"), 0.6111111);
-			m3.addMass(new AdvancedSet<String>("h"), 0.3999999);
-			
-			BBASet<String> set = new BBASet<String>(frame);
-			set.add(m1);
-			set.add(m2);
-			set.add(m3);
-			
-//			System.out.println(m1.getLabel() + " = " + m1);
-//			System.out.println(m2.getLabel() + " = " + m2);
-//			System.out.println("normal: " + m1.getConjunctiveMerge(m2));
-//			System.out.println("normal: " + m1.getConjunctiveMerge(m2.getDiscountedBBA(0.5)));
-			
-			System.out.println(set.getUniquePartition(0));
-			
-			System.out.println("d(" + m1.getLabel() + "," + m0.getLabel() + ")=" + m1.getJousselmeDistance(m0));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public static void distanceMatrix() {
 		try {
 			AdvancedSet<String> frame = new AdvancedSet<String>("l", "n", "h");
