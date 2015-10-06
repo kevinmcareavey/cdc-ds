@@ -248,26 +248,26 @@ public class Debug {
 			m16.addMass(new AdvancedSet<String>("l"), 0.2);
 			m16.addMass(new AdvancedSet<String>("n"), 0.8);
 
-			BBASet<String> set = new BBASet<String>(frame);
-			set.add(m1);
-			set.add(m2);
-			set.add(m3);
-			set.add(m4);
-			set.add(m5);
-			set.add(m6);
-			set.add(m7);
-			set.add(m8);
-			set.add(m9);
-			set.add(m10);
-			set.add(m11);
-			set.add(m12);
-			set.add(m13);
-			set.add(m14);
-			set.add(m15);
+			BBASequence<String> sequence = new BBASequence<String>(frame);
+			sequence.add(m1);
+			sequence.add(m2);
+			sequence.add(m3);
+			sequence.add(m4);
+			sequence.add(m5);
+			sequence.add(m6);
+			sequence.add(m7);
+			sequence.add(m8);
+			sequence.add(m9);
+			sequence.add(m10);
+			sequence.add(m11);
+			sequence.add(m12);
+			sequence.add(m13);
+			sequence.add(m14);
+			sequence.add(m15);
 
-			System.out.println("LPMCS := " + set.getLPMCSMerge(0.25, 0.30).getLabel());
-			System.out.println("Conjunctive := " + set.getConjunctiveMerge().getLabel());
-			System.out.println("Disjunctive := " + set.getDisjunctiveMerge().getLabel());
+			System.out.println("LPMCS := " + sequence.getLPMCSMerge(0.30).getLabel());
+			System.out.println("Conjunctive := " + sequence.getBBASet().getConjunctiveMerge().getLabel());
+			System.out.println("Disjunctive := " + sequence.getBBASet().getDisjunctiveMerge().getLabel());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -308,17 +308,15 @@ public class Debug {
 			m6.addMass(new AdvancedSet<String>("h"), 0.57);
 			m6.addMass(new AdvancedSet<String>("l","n"), 0.18);
 
-			BBASet<String> set = new BBASet<String>(frame);
-			set.add(m1);
-			set.add(m2);
-			set.add(m3);
-			set.add(m4);
-			set.add(m5);
-			set.add(m6);
-
-//			BBA<String> merged = set.getConjunctiveMerge();
-//			BBA<String> merged = set.getDisjunctiveMerge();
-			BBA<String> merged = set.getLPMCSMerge(0.50, 0.35);
+			BBASequence<String> sequence = new BBASequence<String>(frame);
+			sequence.add(m1);
+			sequence.add(m2);
+			sequence.add(m3);
+			sequence.add(m4);
+			sequence.add(m5);
+			sequence.add(m6);
+			
+			BBA<String> merged = sequence.getLPMCSMerge(0.35);
 			System.out.println("sequence  := " + merged.getLabel());
 			System.out.println("BBA       := " + merged);
 			System.out.println("pignistic := " + merged.getPignisticTransformation());
@@ -672,6 +670,147 @@ public class Debug {
 		}
 	}
 	
+	public static void zadehExample() {
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("meningitus", "brain tumour", "concussion");
+			
+			BBA<String> m1 = new BBA<String>("m1", frame);
+			m1.addMass(new AdvancedSet<String>("meningitus"), 0.99);
+			m1.addMass(new AdvancedSet<String>("brain tumour"), 0.01);
+			
+			BBA<String> m2 = new BBA<String>("m2", frame);
+			m2.addMass(new AdvancedSet<String>("concussion"), 0.99);
+			m2.addMass(new AdvancedSet<String>("brain tumour"), 0.01);
+			
+			System.out.println(m1.getConjunctiveMerge(m2));
+			System.out.println(m1.getDisjunctiveMerge(m2));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void ignoranceExample() {
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("meningitus", "brain tumour", "concussion");
+			
+			BBA<String> m1 = new BBA<String>("m1", frame);
+			m1.addMass(new AdvancedSet<String>("meningitus"), 0.99);
+			m1.addMass(frame, 0.01);
+			
+			BBA<String> m2 = new BBA<String>("m1", frame);
+			m2.addMass(frame, 1);
+			
+			System.out.println(m1.getConjunctiveMerge(m2));
+			System.out.println(m1.getDisjunctiveMerge(m2));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void paperExample() {
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("a", "b", "c");
+			
+			BBA<String> m1 = new BBA<String>("m1", frame);
+			m1.addMass(new AdvancedSet<String>("a"), 0.85);
+			m1.addMass(new AdvancedSet<String>("b", "c"), 0.15);
+			
+			BBA<String> m2 = new BBA<String>("m2", frame);
+			m2.addMass(new AdvancedSet<String>("a"), 0.70);
+			m2.addMass(new AdvancedSet<String>("b", "c"), 0.30);
+			
+			BBA<String> m3 = new BBA<String>("m3", frame);
+			m3.addMass(new AdvancedSet<String>("a"), 0.55);
+			m3.addMass(new AdvancedSet<String>("b", "c"), 0.45);
+			
+			System.out.println("N(" + m1.getLabel() + ")=" + Utilities.format(m1.getNonspecificity()));
+			System.out.println("N(" + m2.getLabel() + ")=" + Utilities.format(m2.getNonspecificity()));
+			System.out.println("N(" + m3.getLabel() + ")=" + Utilities.format(m3.getNonspecificity()));
+			
+			System.out.println("S(" + m1.getLabel() + ")=" + Utilities.format(m1.getStrife()));
+			System.out.println("S(" + m2.getLabel() + ")=" + Utilities.format(m2.getStrife()));
+			System.out.println("S(" + m3.getLabel() + ")=" + Utilities.format(m3.getStrife()));
+			
+			System.out.println("d(" + m1.getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m1.getJousselmeDistance(m1)));
+			System.out.println("d(" + m1.getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m1.getJousselmeDistance(m2)));
+			System.out.println("d(" + m1.getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m1.getJousselmeDistance(m3)));
+			
+			System.out.println("d(" + m2.getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m2.getJousselmeDistance(m1)));
+			System.out.println("d(" + m2.getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m2.getJousselmeDistance(m2)));
+			System.out.println("d(" + m2.getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m2.getJousselmeDistance(m3)));
+			
+			System.out.println("d(" + m3.getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m3.getJousselmeDistance(m1)));
+			System.out.println("d(" + m3.getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m3.getJousselmeDistance(m2)));
+			System.out.println("d(" + m3.getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m3.getJousselmeDistance(m3)));
+			
+			System.out.println("d(" + m1.getConjunctiveMerge(m2).getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m2).getJousselmeDistance(m1)));
+			System.out.println("d(" + m1.getConjunctiveMerge(m2).getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m2).getJousselmeDistance(m2)));
+			System.out.println("d(" + m1.getConjunctiveMerge(m2).getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m2).getJousselmeDistance(m3)));
+			
+			System.out.println("d(" + m1.getConjunctiveMerge(m3).getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m3).getJousselmeDistance(m1)));
+			System.out.println("d(" + m1.getConjunctiveMerge(m3).getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m3).getJousselmeDistance(m2)));
+			System.out.println("d(" + m1.getConjunctiveMerge(m3).getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m3).getJousselmeDistance(m3)));
+			
+			System.out.println("d(" + m2.getConjunctiveMerge(m3).getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m2.getConjunctiveMerge(m3).getJousselmeDistance(m1)));
+			System.out.println("d(" + m2.getConjunctiveMerge(m3).getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m2.getConjunctiveMerge(m3).getJousselmeDistance(m2)));
+			System.out.println("d(" + m2.getConjunctiveMerge(m3).getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m2.getConjunctiveMerge(m3).getJousselmeDistance(m3)));
+			
+			System.out.println("K(" + m1.getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m1.getConflict(m1)));
+			System.out.println("K(" + m1.getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m1.getConflict(m2)));
+			System.out.println("K(" + m1.getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m1.getConflict(m3)));
+			
+			System.out.println("K(" + m2.getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m2.getConflict(m1)));
+			System.out.println("K(" + m2.getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m2.getConflict(m2)));
+			System.out.println("K(" + m2.getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m2.getConflict(m3)));
+			
+			System.out.println("K(" + m3.getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m3.getConflict(m1)));
+			System.out.println("K(" + m3.getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m3.getConflict(m2)));
+			System.out.println("K(" + m3.getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m3.getConflict(m3)));
+			
+			System.out.println("K(" + m1.getConjunctiveMerge(m2).getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m2).getConflict(m1)));
+			System.out.println("K(" + m1.getConjunctiveMerge(m2).getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m2).getConflict(m2)));
+			System.out.println("K(" + m1.getConjunctiveMerge(m2).getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m2).getConflict(m3)));
+			
+			System.out.println("K(" + m1.getConjunctiveMerge(m3).getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m3).getConflict(m1)));
+			System.out.println("K(" + m1.getConjunctiveMerge(m3).getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m3).getConflict(m2)));
+			System.out.println("K(" + m1.getConjunctiveMerge(m3).getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m1.getConjunctiveMerge(m3).getConflict(m3)));
+			
+			System.out.println("K(" + m2.getConjunctiveMerge(m3).getLabel() + ", " + m1.getLabel() + ")=" + Utilities.format(m2.getConjunctiveMerge(m3).getConflict(m1)));
+			System.out.println("K(" + m2.getConjunctiveMerge(m3).getLabel() + ", " + m2.getLabel() + ")=" + Utilities.format(m2.getConjunctiveMerge(m3).getConflict(m2)));
+			System.out.println("K(" + m2.getConjunctiveMerge(m3).getLabel() + ", " + m3.getLabel() + ")=" + Utilities.format(m2.getConjunctiveMerge(m3).getConflict(m3)));
+			
+			BBASequence<String> sequence = new BBASequence<String>(frame);
+			sequence.add(m1);
+			sequence.add(m2);
+			sequence.add(m3);
+			
+			System.out.println(sequence.getLPMCSMerge(0.4).getLabel() + ":=" + sequence.getLPMCSMerge(0.4));
+			System.out.println(sequence.getBBASet().getConjunctiveMerge().getLabel() + ":=" + sequence.getBBASet().getConjunctiveMerge());
+			System.out.println(sequence.getBBASet().getDisjunctiveMerge().getLabel() + ":=" + sequence.getBBASet().getDisjunctiveMerge());
+			
+			System.out.println(sequence.getLPMCSMerge(0.4).getLabel() + ":=" + sequence.getLPMCSMerge(0.4).getPignisticTransformation());
+			System.out.println(sequence.getBBASet().getConjunctiveMerge().getLabel() + ":=" + sequence.getBBASet().getConjunctiveMerge().getPignisticTransformation());
+			System.out.println(sequence.getBBASet().getDisjunctiveMerge().getLabel() + ":=" + sequence.getBBASet().getDisjunctiveMerge().getPignisticTransformation());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void strife() {
+		try {
+			AdvancedSet<String> frame = new AdvancedSet<String>("a", "b", "c");
+			
+			BBA<String> m1 = new BBA<String>("m1", frame);
+			m1.addMass(new AdvancedSet<String>("a"), ((double)1/(double)3));
+			m1.addMass(new AdvancedSet<String>("b"), ((double)1/(double)3));
+			m1.addMass(new AdvancedSet<String>("c"), ((double)1/(double)3));
+			
+			System.out.println("S(" + m1.getLabel() + ")=" + m1.getStrife());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args) {
 //		test();
 //		cima();
@@ -680,7 +819,11 @@ public class Debug {
 //		distance();
 //		identical();
 //		distanceMatrix();
-		absurd();
+//		absurd();
+//		zadehExample();
+//		ignoranceExample();
+		paperExample();
+//		strife();
 	}
 
 }

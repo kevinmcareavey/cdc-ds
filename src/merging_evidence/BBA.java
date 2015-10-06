@@ -366,4 +366,42 @@ public class BBA<T> {
 		return output;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((frame == null) ? 0 : frame.hashCode());
+		result = prime * result + ((label == null) ? 0 : label.hashCode());
+		result = prime * result + ((masses == null) ? 0 : masses.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		@SuppressWarnings("unchecked")
+		BBA<T> other = (BBA<T>) obj;
+		if (frame == null) {
+			if (other.frame != null)
+				return false;
+		} else if (!frame.equals(other.frame))
+			return false;
+		if (label == null) {
+			if (other.label != null)
+				return false;
+		} else if (!label.equals(other.label))
+			return false;
+		if (masses == null) {
+			if (other.masses != null)
+				return false;
+		} else if (!masses.equals(other.masses))
+			return false;
+		return true;
+	}
+
 }
