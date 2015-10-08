@@ -838,6 +838,29 @@ public class Debug {
 		}
 	}
 	
+	public static void caseStudy() {
+		try {
+			AdvancedSet<Integer> evidenceFrame = new AdvancedSet<Integer>(48, 49, 50, 51, 52);
+			AdvancedSet<String> hypothesesFrame = new AdvancedSet<String>("low", "normal", "high");
+			
+			EvidentialMap<Integer, String> evidentialMapping = new EvidentialMap<Integer, String>(evidenceFrame, hypothesesFrame);
+			evidentialMapping.addMass(48, new AdvancedSet<String>("low"), 1);
+			evidentialMapping.addMass(49, new AdvancedSet<String>("low", "normal"), 1);
+			evidentialMapping.addMass(50, new AdvancedSet<String>("normal"), 1);
+			evidentialMapping.addMass(51, new AdvancedSet<String>("normal", "high"), 1);
+			evidentialMapping.addMass(52, new AdvancedSet<String>("high"), 1);
+			
+			BBA<Integer> m1 = new BBA<Integer>("m1", evidenceFrame);
+			m1.addMass(new AdvancedSet<Integer>(50), 0.7);
+			m1.addMass(new AdvancedSet<Integer>(49, 50, 51), 0.2);
+			m1.addMass(evidenceFrame, 0.1);
+			
+			System.out.println(m1 + " <=> " + evidentialMapping.getEvidencePropagation(m1));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args) {
 //		test();
 //		cima();
@@ -851,7 +874,8 @@ public class Debug {
 //		ignoranceExample();
 //		paperExample();
 //		strife();
-		evidentialMapping();
+//		evidentialMapping();
+		caseStudy();
 	}
 
 }
