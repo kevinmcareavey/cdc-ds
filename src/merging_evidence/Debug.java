@@ -815,6 +815,29 @@ public class Debug {
 		}
 	}
 	
+	public static void evidentialMapping() {
+		try {
+			AdvancedSet<String> evidenceFrame = new AdvancedSet<String>("e1", "e2", "e3");
+			AdvancedSet<String> hypothesesFrame = new AdvancedSet<String>("a1", "a2", "a3", "a4", "a5");
+			
+			EvidentialMap<String, String> evidentialMapping = new EvidentialMap<String, String>(evidenceFrame, hypothesesFrame);
+			evidentialMapping.addMass("e1", new AdvancedSet<String>("a1", "a2"), 0.7);
+			evidentialMapping.addMass("e1", new AdvancedSet<String>("a3", "a4"), 0.3);
+			evidentialMapping.addMass("e2", new AdvancedSet<String>("a2", "a3"), 0.8);
+			evidentialMapping.addMass("e2", hypothesesFrame, 0.2);
+			evidentialMapping.addMass("e3", new AdvancedSet<String>("a4", "a5"), 0.9);
+			evidentialMapping.addMass("e3", hypothesesFrame, 0.1);
+			
+			BBA<String> m1 = new BBA<String>("m1", evidenceFrame);
+			m1.addMass(new AdvancedSet<String>("e1"), 0.85);
+			m1.addMass(new AdvancedSet<String>("e2", "e3"), 0.15);
+			
+			System.out.println(m1 + " <=> " + evidentialMapping.getEvidencePropagation(m1));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args) {
 //		test();
 //		cima();
@@ -826,8 +849,9 @@ public class Debug {
 //		absurd();
 //		zadehExample();
 //		ignoranceExample();
-		paperExample();
+//		paperExample();
 //		strife();
+		evidentialMapping();
 	}
 
 }

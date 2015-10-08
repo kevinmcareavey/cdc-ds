@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BBA<T> {
-
-	private static double DEVIATION = 0.00000001;
 	
 	private String label;
 	private AdvancedSet<T> frame;
@@ -39,9 +37,9 @@ public class BBA<T> {
 
 	public void addMass(AdvancedSet<T> subset, double value) {
 		if(value < 0 || value > 1) {
-			if(value < 0 && value > 0 - DEVIATION) {
+			if(value < 0 && value > 0 - Utilities.DEVIATION) {
 				value = (double)0;
-			} else if(value > 1 && value < 1 + DEVIATION) {
+			} else if(value > 1 && value < 1 + Utilities.DEVIATION) {
 				value = (double)1;
 			} else {
 				throw new IllegalArgumentException("The mass value must be in the range [0, 1].");
@@ -50,7 +48,7 @@ public class BBA<T> {
 		if(!subset.subsetOf(frame)) {
 			throw new IllegalArgumentException("The input must be a subset of the frame of discernment.");
 		}
-		if(value < 0 + DEVIATION) {
+		if(value < 0 + Utilities.DEVIATION) {
 			masses.remove(subset);
 		} else {
 			masses.put(subset, value);
