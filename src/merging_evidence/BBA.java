@@ -332,19 +332,19 @@ public class BBA<T> {
 		if(alpha < 0 || alpha > 1) {
 			throw new Exception("discount must be in the interval [0, 1]");
 		}
-		BBA<T> discounted = new BBA<T>(label + "_" + Utilities.format(alpha), frame);
+		BBA<T> discounted = new BBA<T>(label + "^" + Utilities.format(alpha), frame);
 		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
 			AdvancedSet<T> focalElement = entry.getKey();
 			if(!focalElement.equals(frame)) {
 				double focalMass = entry.getValue();
-				discounted.addMass(focalElement, alpha * focalMass);
+				discounted.addMass(focalElement, (1 - alpha) * focalMass);
 			}
 		}
 		double frameMass = 0;
 		if(masses.containsKey(frame)) {
 			frameMass = masses.get(frame);
 		}
-		discounted.addMass(frame, (1 - alpha) + (alpha * frameMass));
+		discounted.addMass(frame, alpha + (1 - alpha) * frameMass);
 		return discounted;
 	}
 	

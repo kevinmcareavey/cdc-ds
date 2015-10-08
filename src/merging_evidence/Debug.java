@@ -791,6 +791,10 @@ public class Debug {
 			System.out.println(sequence.getLPMCSMerge(0.4).getLabel() + ":=" + sequence.getLPMCSMerge(0.4).getPignisticTransformation());
 			System.out.println(sequence.getBBASet().getConjunctiveMerge().getLabel() + ":=" + sequence.getBBASet().getConjunctiveMerge().getPignisticTransformation());
 			System.out.println(sequence.getBBASet().getDisjunctiveMerge().getLabel() + ":=" + sequence.getBBASet().getDisjunctiveMerge().getPignisticTransformation());
+			
+			System.out.println(m1.getDiscountedBBA(0.15).getLabel() + ":=" + m1.getDiscountedBBA(0.15));
+			System.out.println(m2.getDiscountedBBA(0.3).getLabel() + ":=" + m2.getDiscountedBBA(0.3));
+			System.out.println(m3.getDiscountedBBA(0.45).getLabel() + ":=" + m3.getDiscountedBBA(0.45));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
