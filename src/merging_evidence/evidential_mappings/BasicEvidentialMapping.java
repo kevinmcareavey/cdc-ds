@@ -1,26 +1,22 @@
-package merging_evidence;
+package merging_evidence.evidential_mappings;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class EvidentialMap<T, U> {
+import merging_evidence.AdvancedSet;
+import merging_evidence.BBA;
+import merging_evidence.EvidentialMapping;
+import merging_evidence.Pair;
+import merging_evidence.ProbabilityDistribution;
+import merging_evidence.Utilities;
+
+public class BasicEvidentialMapping<T, U> extends EvidentialMapping<T, U> {
 	
-	private AdvancedSet<T> evidenceFrame;
-	private AdvancedSet<U> hypothesesFrame;
 	private Map<Pair<T, AdvancedSet<U>>, Double> masses;
 	
-	public EvidentialMap(AdvancedSet<T> e, AdvancedSet<U> h) {
-		evidenceFrame = e;
-		hypothesesFrame = h;
+	public BasicEvidentialMapping(AdvancedSet<T> e, AdvancedSet<U> h) {
+		super(e, h);
 		masses = new HashMap<Pair<T, AdvancedSet<U>>, Double>();
-	}
-	
-	public AdvancedSet<T> getEvidenceFrame() {
-		return evidenceFrame;
-	}
-	
-	public AdvancedSet<U> getHypothesesFrame() {
-		return hypothesesFrame;
 	}
 	
 	public Map<Pair<T, AdvancedSet<U>>, Double> getMasses() {
@@ -37,10 +33,10 @@ public class EvidentialMap<T, U> {
 				throw new IllegalArgumentException("The mass value must be in the range [0, 1].");
 			}
 		}
-		if(!evidenceFrame.contains(e)) {
+		if(!super.getEvidenceFrame().contains(e)) {
 			throw new IllegalArgumentException("The evidence input must be an element of the evidence frame.");
 		}
-		if(!h.subsetOf(hypothesesFrame)) {
+		if(!h.subsetOf(super.getHypothesesFrame())) {
 			throw new IllegalArgumentException("The hypotheses input must be a subset of the hypotheses frame.");
 		}
 		Pair<T, AdvancedSet<U>> pair = new Pair<T, AdvancedSet<U>>(e, h);
@@ -60,7 +56,7 @@ public class EvidentialMap<T, U> {
 		return result;
 	}
 	
-	public BBA<U> getEvidencePropagation(BBA<T> evidence) {
+	public BBA<U> getBayesianEvidencePropagation(BBA<T> evidence) {
 		ProbabilityDistribution<T> p = evidence.getPignisticTransformation();
 		
 		Map<AdvancedSet<U>, Double> sums = new HashMap<AdvancedSet<U>, Double>();
@@ -76,12 +72,16 @@ public class EvidentialMap<T, U> {
 			sums.put(h, previous + (p.get(e) * mass));
 		}
 		
-		BBA<U> evidencePropagation = new BBA<U>("\\Gamma*", hypothesesFrame);
+		BBA<U> evidencePropagation = new BBA<U>("\\Gamma*", super.getHypothesesFrame());
 		for(Map.Entry<AdvancedSet<U>, Double> entry : sums.entrySet()) {
 			evidencePropagation.addMass(entry.getKey(), entry.getValue());
 		}
 		
 		return evidencePropagation;
+	}
+	
+	public CompleteEvidentialMapping<T, U> getCompleteEvidentialMap() {
+		return new CompleteEvidentialMapping<T, U>(super.getEvidenceFrame(), super.getHypothesesFrame());
 	}
 	
 }

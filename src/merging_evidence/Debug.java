@@ -2,6 +2,9 @@ package merging_evidence;
 
 import java.util.ArrayList;
 
+import merging_evidence.evidential_mappings.BasicEvidentialMapping;
+import merging_evidence.evidential_mappings.CompleteEvidentialMapping;
+
 public class Debug {
 
 	public static void test() {
@@ -820,7 +823,7 @@ public class Debug {
 			AdvancedSet<String> evidenceFrame = new AdvancedSet<String>("e1", "e2", "e3");
 			AdvancedSet<String> hypothesesFrame = new AdvancedSet<String>("a1", "a2", "a3", "a4", "a5");
 			
-			EvidentialMap<String, String> evidentialMapping = new EvidentialMap<String, String>(evidenceFrame, hypothesesFrame);
+			BasicEvidentialMapping<String, String> evidentialMapping = new BasicEvidentialMapping<String, String>(evidenceFrame, hypothesesFrame);
 			evidentialMapping.addMass("e1", new AdvancedSet<String>("a1", "a2"), 0.7);
 			evidentialMapping.addMass("e1", new AdvancedSet<String>("a3", "a4"), 0.3);
 			evidentialMapping.addMass("e2", new AdvancedSet<String>("a2", "a3"), 0.8);
@@ -832,30 +835,120 @@ public class Debug {
 			m1.addMass(new AdvancedSet<String>("e1"), 0.85);
 			m1.addMass(new AdvancedSet<String>("e2", "e3"), 0.15);
 			
-			System.out.println(m1 + " <=> " + evidentialMapping.getEvidencePropagation(m1));
+			System.out.println(m1 + " <=> " + evidentialMapping.getBayesianEvidencePropagation(m1));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static void caseStudy() {
+	public static void bayesianEvidencePropagation() {
 		try {
-			AdvancedSet<Integer> evidenceFrame = new AdvancedSet<Integer>(48, 49, 50, 51, 52);
-			AdvancedSet<String> hypothesesFrame = new AdvancedSet<String>("low", "normal", "high");
+			AdvancedSet<String> evidenceFrame = new AdvancedSet<String>("e1", "e2", "e3", "e4", "e5");
+			AdvancedSet<String> hypothesesFrame = new AdvancedSet<String>("h1", "h2", "h3");
 			
-			EvidentialMap<Integer, String> evidentialMapping = new EvidentialMap<Integer, String>(evidenceFrame, hypothesesFrame);
-			evidentialMapping.addMass(48, new AdvancedSet<String>("low"), 1);
-			evidentialMapping.addMass(49, new AdvancedSet<String>("low", "normal"), 1);
-			evidentialMapping.addMass(50, new AdvancedSet<String>("normal"), 1);
-			evidentialMapping.addMass(51, new AdvancedSet<String>("normal", "high"), 1);
-			evidentialMapping.addMass(52, new AdvancedSet<String>("high"), 1);
+			BasicEvidentialMapping<String, String> evidentialMapping = new BasicEvidentialMapping<String, String>(evidenceFrame, hypothesesFrame);
+			evidentialMapping.addMass("e1", new AdvancedSet<String>("h1"), 1);
+			evidentialMapping.addMass("e2", new AdvancedSet<String>("h1"), 0.5);
+			evidentialMapping.addMass("e2", new AdvancedSet<String>("h2"), 0.5);
+			evidentialMapping.addMass("e3", new AdvancedSet<String>("h2"), 1);
+			evidentialMapping.addMass("e4", new AdvancedSet<String>("h2"), 0.5);
+			evidentialMapping.addMass("e4", new AdvancedSet<String>("h3"), 0.5);
+			evidentialMapping.addMass("e5", new AdvancedSet<String>("h3"), 1);
 			
-			BBA<Integer> m1 = new BBA<Integer>("m1", evidenceFrame);
-			m1.addMass(new AdvancedSet<Integer>(50), 0.7);
-			m1.addMass(new AdvancedSet<Integer>(49, 50, 51), 0.2);
+			BBA<String> m1 = new BBA<String>("m1", evidenceFrame);
+			m1.addMass(new AdvancedSet<String>("e3"), 0.7);
+			m1.addMass(new AdvancedSet<String>("e2", "e3", "e4"), 0.2);
 			m1.addMass(evidenceFrame, 0.1);
 			
-			System.out.println(m1 + " <=> " + evidentialMapping.getEvidencePropagation(m1));
+			System.out.println(m1 + " <=> " + evidentialMapping.getBayesianEvidencePropagation(m1));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void evidencePropagation() {
+		try {
+			AdvancedSet<String> evidenceFrame = new AdvancedSet<String>("e1", "e2", "e3");
+			AdvancedSet<String> hypothesesFrame = new AdvancedSet<String>("h1", "h2", "h3", "h4");
+			
+			CompleteEvidentialMapping<String, String> completeEvidentialMapping = new CompleteEvidentialMapping<String, String>(evidenceFrame, hypothesesFrame);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e1"), new AdvancedSet<String>("h1", "h2"), 0.5);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e1"), new AdvancedSet<String>("h3"), 0.5);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e2"), new AdvancedSet<String>("h1", "h2"), 0.7);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e2"), new AdvancedSet<String>("h4"), 0.3);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e3"), new AdvancedSet<String>("h4"), 1);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e1", "e2"), new AdvancedSet<String>("h1", "h2"), 0.6);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e1", "e2"), hypothesesFrame, 0.4);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e1", "e3"), hypothesesFrame, 1);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e2", "e3"), new AdvancedSet<String>("h4"), 0.65);
+			completeEvidentialMapping.addMass(new AdvancedSet<String>("e2", "e3"), new AdvancedSet<String>("h1", "h2", "h4"), 0.35);
+			completeEvidentialMapping.addMass(evidenceFrame, hypothesesFrame, 1);
+			
+			BBA<String> m1 = new BBA<String>("m1", evidenceFrame);
+			m1.addMass(new AdvancedSet<String>("e2"), 0.7);
+			m1.addMass(evidenceFrame, 0.3);
+			
+			System.out.println(m1 + " <=> " + completeEvidentialMapping.getEvidencePropagation(m1));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void scenario() {
+		try {
+			AdvancedSet<Double> sensorFrame = new AdvancedSet<Double>(49.0, 
+					49.1, 49.2, 49.3, 49.4, 49.5, 49.6, 49.7, 49.8, 49.9, 50.0, 
+					50.1, 50.2, 50.3, 50.4, 50.5, 50.6, 50.7, 50.8, 50.9, 51.0);
+			
+			AdvancedSet<String> expertFrame = new AdvancedSet<String>("normal", "abnormal");
+			
+			BBA<Double> m1 = new BBA<Double>("m1", sensorFrame);
+			m1.addMass(new AdvancedSet<Double>(50.1, 50.2, 50.3), 1);
+			
+			BBA<Double> m2 = new BBA<Double>("m2", sensorFrame);
+			m2.addMass(new AdvancedSet<Double>(50.0, 50.1, 50.2, 50.3, 50.4), 1);
+			
+			BBA<Double> m3 = new BBA<Double>("m3", sensorFrame);
+			m3.addMass(new AdvancedSet<Double>(49.4, 49.5, 49.6), 1);
+			
+			BBA<Double> m4 = new BBA<Double>("m4", sensorFrame);
+			m4.addMass(new AdvancedSet<Double>(50.1, 50.2, 50.3), 1);
+			
+			BBA<String> m5 = new BBA<String>("m5", expertFrame);
+			m5.addMass(new AdvancedSet<String>("normal"), 0.9);
+			m5.addMass(expertFrame, 0.1);
+			
+			BBA<Double> m6 = new BBA<Double>("m6", sensorFrame);
+			m6.addMass(new AdvancedSet<Double>(50.8, 50.9, 51.0), 1);
+			
+			BBA<Double> m7 = new BBA<Double>("m7", sensorFrame);
+			m7.addMass(new AdvancedSet<Double>(50.2, 50.3, 50.4), 1);
+			
+			BBA<Double> m8 = new BBA<Double>("m8", sensorFrame);
+			m8.addMass(new AdvancedSet<Double>(50.7, 50.8, 50.9), 1);
+			
+			BBA<Double> m9 = new BBA<Double>("m9", sensorFrame);
+			m9.addMass(new AdvancedSet<Double>(50.7, 50.8, 50.9), 1);
+			
+			BBA<String> m10 = new BBA<String>("m10", expertFrame);
+			m10.addMass(new AdvancedSet<String>("abnormal"), 0.75);
+			m10.addMass(expertFrame, 0.25);
+			
+			ArrayList<Pair<BBA, Double>> list = new ArrayList<Pair<BBA, Double>>();
+			list.add(new Pair<BBA, Double>(m1, 0.02));
+			list.add(new Pair<BBA, Double>(m2, 0.3));
+			list.add(new Pair<BBA, Double>(m3, 0.45));
+			list.add(new Pair<BBA, Double>(m4, 0.3));
+			list.add(new Pair<BBA, Double>(m5, 0.15));
+			list.add(new Pair<BBA, Double>(m6, 0.2));
+			list.add(new Pair<BBA, Double>(m7, 0.35));
+			list.add(new Pair<BBA, Double>(m8, 0.35));
+			list.add(new Pair<BBA, Double>(m9, 0.35));
+			list.add(new Pair<BBA, Double>(m10, 0.2));
+			
+			for(Pair<BBA, Double> pair : list) {
+				System.out.println(pair.getRight() + " & " + pair.getLeft().getDiscountedBBA(pair.getRight()));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -875,7 +968,9 @@ public class Debug {
 //		paperExample();
 //		strife();
 //		evidentialMapping();
-		caseStudy();
+//		bayesianEvidencePropagation();
+//		evidencePropagation();
+		scenario();
 	}
 
 }

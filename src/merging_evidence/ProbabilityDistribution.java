@@ -32,6 +32,18 @@ public class ProbabilityDistribution<T> extends HashMap<T, Double> {
 	}
 	
 	@Override
+	public Double get(Object element) {
+		if(!frame.contains(element)) {
+			throw new IllegalArgumentException("The input must be an element of the frame of discernment.");
+		}
+		if(super.containsKey(element)) {
+			return super.get(element);
+		} else {
+			return 0.0;
+		}
+	}
+	
+	@Override
 	public String toString() {
 		String output = "{";
 		String delim = "";
