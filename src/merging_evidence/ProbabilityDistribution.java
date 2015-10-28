@@ -10,7 +10,7 @@ public class ProbabilityDistribution<T> extends HashMap<T, Double> {
 	 */
 	private static final long serialVersionUID = 6378472408271493264L;
 	
-	AdvancedSet<T> frame;
+	private AdvancedSet<T> frame;
 	
 	public ProbabilityDistribution(AdvancedSet<T> f) {
 		frame = f;

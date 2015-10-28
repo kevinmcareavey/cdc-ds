@@ -53,7 +53,7 @@ public class BBASequence<T> extends ArrayList<BBA<T>> {
 		}
 	}
 	
-	public BBA<T> getLPMCSMerge(double conflictThreshold) throws Exception {
+	public BBA<T> getContextDependentCombination(double conflictThreshold) throws Exception {
 		if(this.isEmpty()) {
 			throw new Exception("No BBAs to merge.");
 		} else {
@@ -70,7 +70,7 @@ public class BBASequence<T> extends ArrayList<BBA<T>> {
 			while(!preferenceOrder.isEmpty()) {
 				BBA<T> closest = preferenceOrder.getClosestBBA(reference);
 				if(reference.getConflict(closest) <= conflictThreshold) {
-					reference = reference.getConjunctiveMerge(closest);
+					reference = reference.getDempstersCombination(closest);
 					qualityOrder.remove(closest);
 					preferenceOrder.remove(closest);
 				} else {
@@ -85,7 +85,7 @@ public class BBASequence<T> extends ArrayList<BBA<T>> {
 			}
 			
 			for(BBA<T> lpmcs : lpmcses) {
-				reference = reference.getDisjunctiveMerge(lpmcs);
+				reference = reference.getDuboisAndPradesCombination(lpmcs);
 			}
 			
 			return reference;

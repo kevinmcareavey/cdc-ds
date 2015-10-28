@@ -27,7 +27,7 @@ public class BBA<T> {
 		return masses;
 	}
 
-	public AdvancedSet<AdvancedSet<T>> getFocalSets() {
+	public AdvancedSet<AdvancedSet<T>> getFocalElements() {
 		AdvancedSet<AdvancedSet<T>> focalSets = new AdvancedSet<AdvancedSet<T>>();
 		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
 			focalSets.add(entry.getKey());
@@ -35,7 +35,7 @@ public class BBA<T> {
 		return focalSets;
 	}
 
-	public void addMass(AdvancedSet<T> subset, double value) {
+	public void setMass(AdvancedSet<T> subset, double value) {
 		if(value < 0 || value > 1) {
 			if(value < 0 && value > 0 - Utilities.DEVIATION) {
 				value = (double)0;
@@ -104,64 +104,6 @@ public class BBA<T> {
 		}
 		return sum;
 	}
-	
-	public boolean isNormalized() {
-		if(this.getMass(new AdvancedSet<T>()) == 0) {
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean isVacuous() {
-		if(this.getMass(frame) == 1) {
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean isCategorical() {
-		if(this.isNormalized()) {
-			if(masses.size() == 1) {
-				if(this.getMass(frame) == 0) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	public boolean isBayesian() {
-		for(Map.Entry<AdvancedSet<T>, Double> entry : masses.entrySet()) {
-			if(entry.getKey().size() != 1) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public boolean isConsonant() {
-		return false;// all focal sets are nested
-	}
-	
-	public boolean isCertain() {
-		if(this.isCategorical()) {
-			if(this.isBayesian()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean isSimpleSupport() {
-		if(masses.size() == 1) {
-			return true;
-		} else if(masses.size() == 2) {
-			if(this.getMass(frame) > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	public boolean isCommensurable(BBA<T> other) {
 		return this.getFrame().equals(other.getFrame());
@@ -208,7 +150,7 @@ public class BBA<T> {
 		return sum;
 	}
 
-	public BBA<T> getConjunctiveMerge(BBA<T> other) throws Exception {
+	public BBA<T> getDempstersCombination(BBA<T> other) throws Exception {
 		BBA<T> merged = null;
 		if(this.isCommensurable(other)) {
 			merged = new BBA<T>(this.getLabel() + " && " + other.getLabel(), frame);
@@ -233,13 +175,13 @@ public class BBA<T> {
 				}
 			}
 			for(Map.Entry<AdvancedSet<T>, Double> entry : sums.entrySet()) {
-				merged.addMass(entry.getKey(), entry.getValue());
+				merged.setMass(entry.getKey(), entry.getValue());
 			}
 		}
 		return merged;
 	}
 
-	public BBA<T> getDisjunctiveMerge(BBA<T> other) {
+	public BBA<T> getDuboisAndPradesCombination(BBA<T> other) {
 		BBA<T> merged = null;
 		if(isCommensurable(other)) {
 			merged = new BBA<T>(this.getLabel() + " || " + other.getLabel(), frame);
@@ -257,7 +199,7 @@ public class BBA<T> {
 				}
 			}
 			for(Map.Entry<AdvancedSet<T>, Double> entry : sums.entrySet()) {
-				merged.addMass(entry.getKey(), entry.getValue());
+				merged.setMass(entry.getKey(), entry.getValue());
 			}
 		}
 		return merged;
@@ -266,8 +208,8 @@ public class BBA<T> {
 	public double getEuclideanDistance(BBA<T> other) {
 		double sum = 0;
 		if(isCommensurable(other)) {
-			AdvancedSet<AdvancedSet<T>> focalSets = this.getFocalSets();
-			focalSets.addAll(other.getFocalSets());
+			AdvancedSet<AdvancedSet<T>> focalSets = this.getFocalElements();
+			focalSets.addAll(other.getFocalElements());
 
 			for(AdvancedSet<T> focalSet : focalSets) {
 				sum += Math.pow(Math.abs(this.getMass(focalSet) - other.getMass(focalSet)), 2);
@@ -279,8 +221,8 @@ public class BBA<T> {
 	public double getJousselmeDistance(BBA<T> other) {
 		double sum = 0;
 		if(isCommensurable(other)) {
-			AdvancedSet<AdvancedSet<T>> focalSets = this.getFocalSets();
-			focalSets.addAll(other.getFocalSets());
+			AdvancedSet<AdvancedSet<T>> focalSets = this.getFocalElements();
+			focalSets.addAll(other.getFocalElements());
 
 			Map<AdvancedSet<T>, Double> distances = new HashMap<AdvancedSet<T>, Double>();
 			for(AdvancedSet<T> focalSet : focalSets) {
@@ -335,14 +277,14 @@ public class BBA<T> {
 			AdvancedSet<T> focalElement = entry.getKey();
 			if(!focalElement.equals(frame)) {
 				double focalMass = entry.getValue();
-				discounted.addMass(focalElement, (1 - alpha) * focalMass);
+				discounted.setMass(focalElement, (1 - alpha) * focalMass);
 			}
 		}
 		double frameMass = 0;
 		if(masses.containsKey(frame)) {
 			frameMass = masses.get(frame);
 		}
-		discounted.addMass(frame, alpha + (1 - alpha) * frameMass);
+		discounted.setMass(frame, alpha + (1 - alpha) * frameMass);
 		return discounted;
 	}
 	

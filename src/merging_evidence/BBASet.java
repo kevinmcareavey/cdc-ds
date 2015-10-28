@@ -25,7 +25,7 @@ public class BBASet<T> extends AdvancedSet<BBA<T>> {
 		return super.add(bba);
 	}
 	
-	public BBA<T> getConjunctiveMerge() throws Exception {
+	public BBA<T> getDempstersCombination() throws Exception {
 		if(this.isEmpty()) {
 			throw new Exception("No BBAs to merge.");
 		}
@@ -35,14 +35,14 @@ public class BBASet<T> extends AdvancedSet<BBA<T>> {
 			if(reference == null) {
 				reference = next;
 			} else {
-				reference = reference.getConjunctiveMerge(next);
+				reference = reference.getDempstersCombination(next);
 			}
 		}
 		
 		return reference;
 	}
 	
-	public BBA<T> getDisjunctiveMerge() throws Exception {
+	public BBA<T> getDuboisAndPradesCombination() throws Exception {
 		if(this.isEmpty()) {
 			throw new Exception("No BBAs to merge.");
 		}
@@ -52,7 +52,7 @@ public class BBASet<T> extends AdvancedSet<BBA<T>> {
 			if(reference == null) {
 				reference = next;
 			} else {
-				reference = reference.getDisjunctiveMerge(next);
+				reference = reference.getDuboisAndPradesCombination(next);
 			}
 		}
 		
