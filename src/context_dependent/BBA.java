@@ -90,8 +90,7 @@ public class BBA<T> {
 	public boolean isValid() {
 		boolean result = false;
 		double sum = sum();
-		double deviation = 1e-10;
-		if(sum >= 1 - deviation && sum <= 1 + deviation) {
+		if(sum >= 1 - Utilities.DEVIATION && sum <= 1 + Utilities.DEVIATION) {
 			result = true;
 		}
 		return result;

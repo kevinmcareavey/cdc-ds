@@ -223,15 +223,17 @@ public class Section5 {
 	}
 	
 	public void table8a() throws Exception {
-		System.out.println(sequence.getContextDependentCombination(0.3));
-		System.out.println(sequence.getBBASet().getDempstersCombination());
-		System.out.println(sequence.getBBASet().getDuboisAndPradesCombination());
+		double threshold = 0.3;
+		System.out.println("Context-dependent (" + threshold + "): " + sequence.getContextDependentCombination(threshold));
+		System.out.println("Dempster's rule: " + sequence.getBBASet().getDempstersCombination());
+		System.out.println("Dubois & Prade's rule: " + sequence.getBBASet().getDuboisAndPradesCombination());
 	}
 	
 	public void table8b() throws Exception {
-		System.out.println(sequence.getContextDependentCombination(0.3).getPignisticTransformation());
-		System.out.println(sequence.getBBASet().getDempstersCombination().getPignisticTransformation());
-		System.out.println(sequence.getBBASet().getDuboisAndPradesCombination().getPignisticTransformation());
+		double threshold = 0.3;
+		System.out.println("Context-dependent (" + threshold + "): " + sequence.getContextDependentCombination(threshold).getPignisticTransformation());
+		System.out.println("Dempster's rule: " + sequence.getBBASet().getDempstersCombination().getPignisticTransformation());
+		System.out.println("Dubois & Prade's rule: " + sequence.getBBASet().getDuboisAndPradesCombination().getPignisticTransformation());
 	}
 	
 	public static void main(String[] args) {
