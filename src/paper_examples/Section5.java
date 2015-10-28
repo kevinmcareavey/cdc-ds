@@ -1,12 +1,12 @@
-package paper;
+package paper_examples;
 
 import java.util.ArrayList;
 
-import merging_evidence.AdvancedSet;
-import merging_evidence.BBA;
-import merging_evidence.BBASequence;
-import merging_evidence.EvidentialMapping;
-import merging_evidence.Utilities;
+import context_dependent.AdvancedSet;
+import context_dependent.BBA;
+import context_dependent.BBASequence;
+import context_dependent.EvidentialMapping;
+import context_dependent.Utilities;
 
 public class Section5 {
 	

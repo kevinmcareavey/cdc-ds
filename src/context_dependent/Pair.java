@@ -1,4 +1,4 @@
-package merging_evidence;
+package context_dependent;
 
 public class Pair<T, U> {
 	

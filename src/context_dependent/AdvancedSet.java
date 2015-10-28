@@ -1,4 +1,4 @@
-package merging_evidence;
+package context_dependent;
 
 import java.util.Collection;
 import java.util.HashSet;
